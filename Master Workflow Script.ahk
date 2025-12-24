@@ -2,18 +2,18 @@
 
 ; Info
 
-; This script is used as a info guide to the sub-scripts and contains extra info to be aware of.
+; This script is used as a info guide to the sub-scripts and contains extra info to be aware of. It does not need to be opened alongside the others. 
 ; Please note whats below, but keep in mind it is not absolute, some things may be changed without being updated here.
 
 ; PREREQS - IMPORTANT
 
 ; - turn numlock on
-; - note the kill command at the bottom incase of immediate need to stop (might need to press multiple times if multiple scripts are running)
+; - note the kill command at the bottom incase of immediate need to stop
 ; - for appointment book open the "standard patient enquiry" window before use (the eye icon) and be in the "Person" tab
 ; - do each process once manually on each app before using the script, as they are usually slow at first and will desync from the program
-; - change the variables listed at the bottom to match your needs
-; - do not use more than one script at a time (excluding this one and clippy), I'm not sure how nice these scripts play with each other
-; - don't use any scripts in the beta or deprecated folder without setting up with me first, as they are basically unstable or require specific instructions.
+; - change the variables listed at the bottom of this page to match your needs (browser name, initials, etc)
+; - do not use more than one script at a time (excluding this one and clippy), Hotkeys may conflict and other similar issues.
+; - don't use any scripts in the beta or deprecated folder without setting up with me first, as they are basically unstable or require a very specific setup.
 ; - MOST IMPORTANTLY - This is not a script to do your work for you, it merely assists. It is some of the most spagetti code I have ever written and will probably mess something up the moment you look away so pay attention and use with caution.
 
 ; CURRENT KEYS
@@ -30,11 +30,12 @@
 ; - Numpad1 - Puts copied MRN into Powerchart and searches, up until it opens the first documentation entry
 ; - Numpad2 - Puts copied MRN into Revenue Cycle and searches, up until its searching the PDS database (no reliable way to open past appointments at this time)
 ; - Numpad3 - Puts copied MRN into Appointment Book and searches, up until all appointments are listed
-; - CTRL + Numpad1 - Goes to first open xlsx browser tab and enters No Doc along with Name and Date. May have different effects if used on sheets with extra columns, crtl+z if that happens
+; - CTRL + Numpad1 - Goes to first open xlsx browser tab and enters 'No Documentation' along with Name and Date. May have different effects if used on sheets with extra columns, edit the script or hide columns as needed.
 ; - CTRL + Numpad2 - ^ but 'Checked Out'
-; - CTRL + Numpad3 - ?
-; - CTRL + Numpad4 - ^ but 'DNA No Doc'
-; - CTRL + Numpad5 - ^ but 'Checkout No Doc'
+; - CTRL + Numpad3 - ^ but 'Already Checked Out'
+; - CTRL + Numpad4 - ^ but 'DNA'
+; - CTRL + Numpad5 - ^ but 'DNA No Doc'
+; - CTRL + Numpad6 - ^ but 'Checkout No Doc'
 
 ; - GEH [SPECFIC SETUP NEEDED, DONT USE]
 ; - PgUp - In Teams, makes a new Word doc

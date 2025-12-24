@@ -307,8 +307,118 @@ Numpad3:: {
     MsgBox("❌ Tab with title containing '" partialTabTitle "' not found.")
 }
 
-; Mark as "DNA No Documentation"
+; Mark as "Already Checked Out" with NOC 3
+^Numpad3:: {
+    foundHwnd := 0
+
+    for hwnd in WinGetList() {
+        title := WinGetTitle(hwnd)
+        if InStr(title, partialBrowserTitle) {
+            foundHwnd := hwnd
+            break
+        }
+    }
+
+    if !foundHwnd {
+        MsgBox("❌ No window found with partial title: " partialBrowserTitle)
+        ExitApp
+    }
+
+    WinActivate(foundHwnd)
+    Sleep(100)
+
+    Loop maxTabSwitches {
+        Sleep(200)
+        currentTitle := WinGetTitle("A")
+        ToolTip("Current window title: " currentTitle)
+
+        if InStr(currentTitle, partialTabTitle) {
+            ToolTip()
+            
+            Send("{Right}")
+            Send("{Right}")
+            Send("{Right}")
+            Send("{Right}")
+            Send("Already Checked Out")
+            Send("{Right}")
+            Send("3")
+            Send("{Right}")
+            ;initials - variable declared at start of file            
+            Send(initials)
+            Send("{Right}")
+            Send("^{;}")
+            Sleep(100)
+            Send("{Enter}")
+            Send("{Up}")
+            
+            return
+        }
+
+        Send("^{Tab}")
+        Sleep(250)
+    }
+
+    ToolTip()
+    MsgBox("❌ Tab with title containing '" partialTabTitle "' not found.")
+}
+
+; Mark as "No Show" with NOC 3
 ^Numpad4:: {
+    foundHwnd := 0
+
+    for hwnd in WinGetList() {
+        title := WinGetTitle(hwnd)
+        if InStr(title, partialBrowserTitle) {
+            foundHwnd := hwnd
+            break
+        }
+    }
+
+    if !foundHwnd {
+        MsgBox("❌ No window found with partial title: " partialBrowserTitle)
+        ExitApp
+    }
+
+    WinActivate(foundHwnd)
+    Sleep(100)
+
+    Loop maxTabSwitches {
+        Sleep(200)
+        currentTitle := WinGetTitle("A")
+        ToolTip("Current window title: " currentTitle)
+
+        if InStr(currentTitle, partialTabTitle) {
+            ToolTip()
+            
+            Send("{Right}")
+            Send("{Right}")
+            Send("{Right}")
+            Send("{Right}")
+            Send("No Show")
+            Send("{Right}")
+            Send("3")
+            Send("{Right}")
+            ;initials - variable declared at start of file            
+            Send(initials)
+            Send("{Right}")
+            Send("^{;}")
+            Sleep(100)
+            Send("{Enter}")
+            Send("{Up}")
+            
+            return
+        }
+
+        Send("^{Tab}")
+        Sleep(250)
+    }
+
+    ToolTip()
+    MsgBox("❌ Tab with title containing '" partialTabTitle "' not found.")
+}
+
+; Mark as "DNA No Documentation"
+^Numpad5:: {
     foundHwnd := 0
 
     for hwnd in WinGetList() {
@@ -362,7 +472,7 @@ Numpad3:: {
 }
 
 ; Mark as "Checkout No Documentation"
-^Numpad5:: {
+^Numpad6:: {
     foundHwnd := 0
 
     for hwnd in WinGetList() {
