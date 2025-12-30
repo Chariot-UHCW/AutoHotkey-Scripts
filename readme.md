@@ -1,1 +1,1 @@
-All info is in the Master script!
+All info is in the Master script! It's important to read there before running anything.
