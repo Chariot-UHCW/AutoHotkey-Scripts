@@ -1,68 +1,40 @@
 #Requires AutoHotkey v2.0
 #Include Master Workflow Script.ahk
 
+#Include ./outpatients-sub/enterOutcome.ahk
+#Include ./outpatients-sub/hwnd.ahk
+#Include ./outpatients-sub/tab.ahk
+#Include ./outpatients-sub/windowCheck.ahk
+
 ; Outpatients Validation Hotkeys
 
 ; Get New MRN from browser tab
 Numpad0:: {
-    foundHwnd := 0
-
-    ; Find the browser window
-    for hwnd in WinGetList() {
-        title := WinGetTitle(hwnd)
-        if InStr(title, partialBrowserTitle) {
-            foundHwnd := hwnd
-            break
-        }
-    }
-
-    if !foundHwnd {
-        MsgBox("❌ No window found with partial title: " partialBrowserTitle)
-        ExitApp
-    }
-
-    WinActivate(foundHwnd)
+    FindHwnd ; calls outpatients-sub/hwnd.ahk
     Sleep(100)
 
-    ; Search through tabs for the target
-    Loop maxTabSwitches {
-        Sleep(200)
-        currentTitle := WinGetTitle("A")
-        ToolTip("Current window title: " currentTitle)
+    FindTab ; calls outpatients-sub/tab.ahk
+    Sleep(100)
+    
+    Send("{Down}")
+    Send("^{Left}")
+    Send("^{Left}")
+    Sleep(100)
 
-        if InStr(currentTitle, partialTabTitle) {
-            ToolTip()
-            
-            ; Navigate to MRN cell and copy
-            Send("{Down}")
-            Send("^{Left}")
-            Send("^{Left}")
-            Sleep(100)
-            if !legacySheet { ; if legacySheet is anything excluding 'true', it will assume attendance ID is present and move across to the MRN
-                Send("{Right}")
-            }
-            Sleep(100)
-            Send("^{c}")
-            return
-        }
-
-        Send("^{Tab}")
-        Sleep(250)
+    if !legacySheet {
+        Send("{Right}")
     }
 
-    ToolTip()
-    MsgBox("❌ Tab with title containing '" partialTabTitle "' not found.")
+    Sleep(100)
+    Send("^{c}")
 }
 
 ; Goto Powerchart and navigate to documentation
+; this is the ugliest code ever. if you need to edit this before i re-write it im sorry 😭 
 Numpad1:: {
-    SetTitleMatchMode(2)
-
-    if WinExist("Power") {
-        WinActivate()
-    } else {
-        MsgBox("Window not found")
-        Return
+    if !windowCheck("Power") {
+        MsgBox("Window check failed")
+        return
     }
 
     Click(1778, 112)
@@ -147,13 +119,9 @@ Numpad1:: {
 
 ; Goto Revenue Cycle window and paste MRN
 Numpad2:: {
-    SetTitleMatchMode(2)
-
-    if WinExist("Revenue Cycle") {
-        WinActivate()
-    } else {
-        MsgBox("Window not found")
-        Return
+    if !windowCheck("Revenue Cycle") {
+        MsgBox("Window check failed")
+        return
     }
 
     Click(31, 57)
@@ -166,13 +134,9 @@ Numpad2:: {
 
 ; Goto Appointment Book window and paste MRN
 Numpad3:: {
-    SetTitleMatchMode(2)
-
-    if WinExist("Standard Patient Enquiry") { ; Name might look different if the window is focused, this will still target it
-        WinActivate()
-    } else {
-        MsgBox("Window not found")
-        Return
+    if !windowCheck("Standard Patient Enquiry") {
+        MsgBox("Window check failed")
+        return
     }
 
     ; Close any open windows within
@@ -204,330 +168,66 @@ Numpad3:: {
 
 ; Mark as "No Documentation"
 ^Numpad1:: {
-
-    ; Find the browser window
-    foundHwnd := 0
-
-    for hwnd in WinGetList() {
-        title := WinGetTitle(hwnd)
-        if InStr(title, partialBrowserTitle) {
-            foundHwnd := hwnd
-            break
-        }
-    }
-
-    if !foundHwnd {
-        MsgBox("❌ No window found with partial title: " partialBrowserTitle)
-        ExitApp
-    }
-
-    WinActivate(foundHwnd)
+    FindHwnd ; calls outpatients-sub/hwnd.ahk
     Sleep(100)
 
-    ; Find the tab
-    Loop maxTabSwitches {
-        Sleep(200)
-        currentTitle := WinGetTitle("A")
-        ToolTip("Current window title: " currentTitle)
+    FindTab ; calls outpatients-sub/tab.ahk
+    Sleep(100)
 
-        if InStr(currentTitle, partialTabTitle) {
-            ToolTip()
-            
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("No Documentation")
-            Send("{Right}")
-            Send("{Right}")
-            ;initials - variable declared at start of file
-            Send(initials)
-            Send("{Right}")
-            Send("^{;}")
-            Sleep(100)
-            Send("{Enter}")
-            Send("{Up}")
-            
-            return
-        }
-
-        Send("^{Tab}")
-        Sleep(250)
-    }
-
-    ToolTip()
-    MsgBox("❌ Tab with title containing '" partialTabTitle "' not found.")
+    enterOutcome("No Documentation") ; calls outpatients-sub/enterOutcome.ahk
 }
 
 ; Mark as "Checked Out" with NOC 3
 ^Numpad2:: {
-    foundHwnd := 0
-
-    for hwnd in WinGetList() {
-        title := WinGetTitle(hwnd)
-        if InStr(title, partialBrowserTitle) {
-            foundHwnd := hwnd
-            break
-        }
-    }
-
-    if !foundHwnd {
-        MsgBox("❌ No window found with partial title: " partialBrowserTitle)
-        ExitApp
-    }
-
-    WinActivate(foundHwnd)
+    FindHwnd ; calls outpatients-sub/hwnd.ahk
     Sleep(100)
 
-    Loop maxTabSwitches {
-        Sleep(200)
-        currentTitle := WinGetTitle("A")
-        ToolTip("Current window title: " currentTitle)
+    FindTab ; calls outpatients-sub/tab.ahk
+    Sleep(100)
 
-        if InStr(currentTitle, partialTabTitle) {
-            ToolTip()
-            
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("Checked Out")
-            Send("{Right}")
-            Send("3")
-            Send("{Right}")
-            ;initials - variable declared at start of file            
-            Send(initials)
-            Send("{Right}")
-            Send("^{;}")
-            Sleep(100)
-            Send("{Enter}")
-            Send("{Up}")
-            
-            return
-        }
-
-        Send("^{Tab}")
-        Sleep(250)
-    }
-
-    ToolTip()
-    MsgBox("❌ Tab with title containing '" partialTabTitle "' not found.")
+    enterOutcome("Checked Out") ; calls outpatients-sub/enterOutcome.ahk
 }
 
 ; Mark as "Already Checked Out" with NOC 3
 ^Numpad3:: {
-    foundHwnd := 0
-
-    for hwnd in WinGetList() {
-        title := WinGetTitle(hwnd)
-        if InStr(title, partialBrowserTitle) {
-            foundHwnd := hwnd
-            break
-        }
-    }
-
-    if !foundHwnd {
-        MsgBox("❌ No window found with partial title: " partialBrowserTitle)
-        ExitApp
-    }
-
-    WinActivate(foundHwnd)
+    FindHwnd ; calls outpatients-sub/hwnd.ahk
     Sleep(100)
 
-    Loop maxTabSwitches {
-        Sleep(200)
-        currentTitle := WinGetTitle("A")
-        ToolTip("Current window title: " currentTitle)
+    FindTab ; calls outpatients-sub/tab.ahk
+    Sleep(100)
 
-        if InStr(currentTitle, partialTabTitle) {
-            ToolTip()
-            
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("Already Checked Out")
-            Send("{Right}")
-            Send("3")
-            Send("{Right}")
-            ;initials - variable declared at start of file            
-            Send(initials)
-            Send("{Right}")
-            Send("^{;}")
-            Sleep(100)
-            Send("{Enter}")
-            Send("{Up}")
-            
-            return
-        }
-
-        Send("^{Tab}")
-        Sleep(250)
-    }
-
-    ToolTip()
-    MsgBox("❌ Tab with title containing '" partialTabTitle "' not found.")
+    enterOutcome("Already Checked Out") ; calls outpatients-sub/enterOutcome.ahk
 }
 
 ; Mark as "No Show" with NOC 3
 ^Numpad4:: {
-    foundHwnd := 0
-
-    for hwnd in WinGetList() {
-        title := WinGetTitle(hwnd)
-        if InStr(title, partialBrowserTitle) {
-            foundHwnd := hwnd
-            break
-        }
-    }
-
-    if !foundHwnd {
-        MsgBox("❌ No window found with partial title: " partialBrowserTitle)
-        ExitApp
-    }
-
-    WinActivate(foundHwnd)
+    FindHwnd ; calls outpatients-sub/hwnd.ahk
     Sleep(100)
 
-    Loop maxTabSwitches {
-        Sleep(200)
-        currentTitle := WinGetTitle("A")
-        ToolTip("Current window title: " currentTitle)
+    FindTab ; calls outpatients-sub/tab.ahk
+    Sleep(100)
 
-        if InStr(currentTitle, partialTabTitle) {
-            ToolTip()
-            
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("No Show")
-            Send("{Right}")
-            Send("3")
-            Send("{Right}")
-            ;initials - variable declared at start of file            
-            Send(initials)
-            Send("{Right}")
-            Send("^{;}")
-            Sleep(100)
-            Send("{Enter}")
-            Send("{Up}")
-            
-            return
-        }
-
-        Send("^{Tab}")
-        Sleep(250)
-    }
-
-    ToolTip()
-    MsgBox("❌ Tab with title containing '" partialTabTitle "' not found.")
+    enterOutcome("No Show") ; calls outpatients-sub/enterOutcome.ahk
 }
 
 ; Mark as "DNA No Documentation"
 ^Numpad5:: {
-    foundHwnd := 0
-
-    for hwnd in WinGetList() {
-        title := WinGetTitle(hwnd)
-        if InStr(title, partialBrowserTitle) {
-            foundHwnd := hwnd
-            break
-        }
-    }
-
-    if !foundHwnd {
-        MsgBox("❌ No window found with partial title: " partialBrowserTitle)
-        ExitApp
-    }
-
-    WinActivate(foundHwnd)
+    FindHwnd ; calls outpatients-sub/hwnd.ahk
     Sleep(100)
 
-    Loop maxTabSwitches {
-        Sleep(200)
-        currentTitle := WinGetTitle("A")
-        ToolTip("Current window title: " currentTitle)
+    FindTab ; calls outpatients-sub/tab.ahk
+    Sleep(100)
 
-        if InStr(currentTitle, partialTabTitle) {
-            ToolTip()
-            
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("DNA No Documentation")
-            Send("{Right}")
-            Send("{Right}")
-            ;initials - variable declared at start of file            
-            Send(initials)
-            Send("{Right}")
-            Send("^{;}")
-            Sleep(100)
-            Send("{Enter}")
-            Send("{Up}")
-            
-            return
-        }
-
-        Send("^{Tab}")
-        Sleep(250)
-    }
-
-    ToolTip()
-    MsgBox("❌ Tab with title containing '" partialTabTitle "' not found.")
+    enterOutcome("DNA No Documentation") ; calls outpatients-sub/enterOutcome.ahk
 }
 
 ; Mark as "Checkout No Documentation"
 ^Numpad6:: {
-    foundHwnd := 0
-
-    for hwnd in WinGetList() {
-        title := WinGetTitle(hwnd)
-        if InStr(title, partialBrowserTitle) {
-            foundHwnd := hwnd
-            break
-        }
-    }
-
-    if !foundHwnd {
-        MsgBox("❌ No window found with partial title: " partialBrowserTitle)
-        ExitApp
-    }
-
-    WinActivate(foundHwnd)
+    FindHwnd ; calls outpatients-sub/hwnd.ahk
     Sleep(100)
 
-    Loop maxTabSwitches {
-        Sleep(200)
-        currentTitle := WinGetTitle("A")
-        ToolTip("Current window title: " currentTitle)
+    FindTab ; calls outpatients-sub/tab.ahk
+    Sleep(100)
 
-        if InStr(currentTitle, partialTabTitle) {
-            ToolTip()
-            
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("{Right}")
-            Send("Checkout No Documentation")
-            Send("{Right}")
-            Send("{Right}")
-            ;initials - variable declared at start of file            
-            Send(initials)
-            Send("{Right}")
-            Send("^{;}")
-            Sleep(100)
-            Send("{Enter}")
-            Send("{Up}")
-            
-            return
-        }
-
-        Send("^{Tab}")
-        Sleep(250)
-    }
-
-    ToolTip()
-    MsgBox("❌ Tab with title containing '" partialTabTitle "' not found.")
+    enterOutcome("Checkout No Documentation") ; calls outpatients-sub/enterOutcome.ahk
 }
