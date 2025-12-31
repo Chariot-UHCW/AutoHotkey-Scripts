@@ -1,10 +1,10 @@
 #Requires AutoHotkey v2.0
 #Include ../Master Workflow Script.ahk
 
-#Include ./sub-processes/outpatients/enterOutcome.ahk
-#Include ./sub-processes/outpatients/hwnd.ahk
-#Include ./sub-processes/outpatients/tab.ahk
-#Include ./sub-processes/outpatients/windowCheck.ahk
+#Include sub-processes/outpatients/enterOutcome.ahk
+#Include sub-processes/outpatients/hwnd.ahk
+#Include sub-processes/outpatients/tab.ahk
+#Include sub-processes/outpatients/windowCheck.ahk
 
 ; Outpatients Validation Hotkeys
 

@@ -1,5 +1,4 @@
 #Requires AutoHotkey v2.0
-#Include ../../../Master Workflow Script.ahk
 
 ; needs re-write ngl, looks ugly and is probably unoptimised.
 
