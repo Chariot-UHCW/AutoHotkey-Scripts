@@ -4,8 +4,8 @@
 ; Clipboard rules
 
 ; Clipboard slots (1-9), enter the text into the quotes and the corresponding function key will paste. example below.
-global ClipSlot1 := "waitlist created in EPR/PAS, to be booked later"
-global ClipSlot2 := ""
+global ClipSlot1 := "example paste, will always be on slot F1, feel free to change of course :D"
+global ClipSlot2 := "another example"
 global ClipSlot3 := ""
 global ClipSlot4 := ""
 global ClipSlot5 := ""

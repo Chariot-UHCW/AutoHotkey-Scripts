@@ -1,3 +1,6 @@
+
+; sends a random input every 10 seconds, best to use in a fullscreen notepad.
+
 #Requires AutoHotkey v2.0
 #Include ../Master Workflow Script.ahk
 

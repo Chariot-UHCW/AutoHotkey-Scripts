@@ -8,7 +8,7 @@
     SendText(A_Clipboard)
 }
 
-; Paste this message so it doesnt need to linger in the clipboard
+; Hashtag to paste this message so it doesnt need to linger in the clipboard
 #::{
     Send("Referral added to EPR/PAS to be booked")
 }
