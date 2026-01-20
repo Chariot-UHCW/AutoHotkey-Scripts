@@ -115,6 +115,8 @@ Numpad1:: {
     CoordMode("Mouse", "Screen")
     MouseMove(2151, 371)
     Click()
+
+    Sleep(100) ; Sleep for queue of processes.
 }
 
 ; Goto Revenue Cycle window and paste MRN
@@ -132,6 +134,8 @@ Numpad2:: {
     Send("{Enter}")
 
     ; No need to add naviagation to past appointments, as you can set that manually in Revenue Cycle in View > Perspective Layout > Save
+
+    Sleep(100) ; Sleep for queue of processes.
 }
 
 ; Goto Appointment Book window and paste MRN

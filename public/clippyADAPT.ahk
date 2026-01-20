@@ -1,6 +1,8 @@
 #Requires AutoHotkey v2.0
 #Include ../Master Workflow Script.ahk
 
+; messy code, sorry, it works tho
+
 ; Clipboard slots (1-9) with slot 1 always being the most recent
 global ClipSlot1 := ""
 global ClipSlot2 := ""

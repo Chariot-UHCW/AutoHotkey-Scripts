@@ -9,7 +9,6 @@ enterOutcome(outcome) {
     Send("{Right}")
     Send("3")
     Send("{Right}")
-    ;initials - variable declared at start of file            
     Send(initials)
     Send("{Right}")
     Send("^{;}")

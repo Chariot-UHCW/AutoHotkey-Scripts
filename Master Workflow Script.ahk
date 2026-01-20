@@ -28,6 +28,7 @@
 
 ; - Master Workflow Script (global)
 ; - ` (backtick) - Kill script(s) immediately
+; - ` (backtick) + Shift - Send DQ signature 
 
 ; - Clippy
 ; - F1-F9 - Paste from clipboard slots 1-9
@@ -48,22 +49,19 @@
 ; - CTRL + Numpad6 - ^ but 'Checkout No Doc'
 
 ; - ERS
-; - CTRL + SHIFT + V - Paste clipboard as characters, allows pasting into Revenue Cycle's UBRN field.
-; - E + R -  
-
-; - GEH [VERY VERY SPECFIC SETUP NEEDED, DONT USE]
-; - PgUp - In Teams, makes a new Word doc
-; - ALT + V - In Word doc, enters title format with MRN and initials
-; - Numpad7 - Goes to PM Office and opens up the encounter search window (peak laziness)
+; - CTRL + SHIFT + V - Types clipboard as individual characters, allows pasting into Revenue Cycle's UBRN field.
+; - Hashtag (#) - Paste "Referral added to EPR/PAS to be booked"
+; - Shift + Hashtag - Paste "- Awaiting triage"
+; - Insert - Start input process.
 
 ; --------------------
-; - Variables
+; Variables
 ; --------------------
 
-; Report opening
+; Report(s) opening
 partialBrowserTitle := "edge"       ; replace 'Edge' with your browser of choice
 outpatientTabTitle := "new report"  ; change from 'new report' to whatever is in the title of your spreadsheet tab if you need to be more specific
-eReferralTabTitle := "eRS"
+eReferralTabTitle := "eRS"  ; normally its this
 maxTabSwitches := 10    ; How many tabs should be checked before giving up finding the sheet?
 
 ; Report modifiers
@@ -71,10 +69,14 @@ legacySheet := false    ; set to true if you hide attendance ID column OR if the
 initials := "Josh"  ; Name in sheet?
 
 ; Clipboard
-clipboardDistance := 10 ; How far down on the screen should the clipboards start appearing? 0 = top of screen, 10 = 200px down
+clipboardDistance := 10 ; How far down on the screen should the clipboards start appearing? (in 200px increments, 10 is a good default)
 
-
-; --- Hotkey to kill the script instantly ---
+; Hotkey to kill the script instantly
 `:: {   ; Backtick - the key next to 1
     ExitApp()
+}
+
+; DQ Action message
++`:: {
+    Send("DQ (Data Quality Team) / DSG (Data Solutions Group) DSG@uhcw.nhs.uk")
 }

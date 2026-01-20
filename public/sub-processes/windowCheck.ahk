@@ -1,7 +1,5 @@
 #Requires AutoHotkey v2.0
 
-; needs re-write ngl, looks ugly and is probably unoptimised.
-
 windowCheck(windowTitle) {
     SetTitleMatchMode(2)
 

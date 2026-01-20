@@ -20,6 +20,8 @@ addReferralCycle := 1
     Send("Referral added to EPR/PAS to be booked")
 }
 
+; I don't remember why I seperated these next two functions, but im pretty sure this serves a purpose.
+
 AwaitingTriage() {
     Send(" - Awaiting triage")
 }
@@ -30,9 +32,8 @@ AwaitingTriage() {
 
 
 ; add referral process, make sure you click the first input box before using
-F1:: {
+Insert:: {
     global addReferralCycle
-    
     ; Enter from uni box to treatment function
     if (addReferralCycle = 1) {
         Send("uni")
@@ -105,14 +106,18 @@ F1:: {
         FindTab ; calls sub-processes/ers/tab.ahk
         Sleep(100)
 
-        Send("{Left}")
+        Send("{Right}")
         Sleep(50)
-        Send("{Left}")
+        Send("{Right}")
+        Sleep(50)
+        Send("{Right}")
+        Sleep(50)
+        Send("{Right}")
         Sleep(50)
         Send("^c")
         Sleep(50)
 
-        if !windowCheck("Revenue Cycle") {
+        if !windowCheck("Add") {
         MsgBox("Window check failed")
         return
         }
@@ -127,7 +132,8 @@ F1:: {
 
         Send("^{v}")
         Sleep(50)
-        AwaitingTriage()
+
+        ;AwaitingTriage()
         Sleep(100)
 
         Send("^a")
