@@ -1,16 +1,14 @@
 ﻿#Include ../Master Workflow Script.ahk
-
-; Script to test AHK functionality
-Esc:: {
-    MsgBox("a")
-    Sleep(1000)
-    MsgBox("b")
-}
+#Include ../UIA-v2-1.1.2\Lib\UIA.ahk
 
 F1:: {
-    Send(A_MM)
-    Send("/")
-    Send(A_DD)
-    Send("/")
-    Send(A_YYYY)
+    hwnd := WinExist("Power")
+    hMenu := DllCall("GetMenu", "Ptr", hwnd, "Ptr")
+    
+    if hMenu {
+        ; Menu exists, try MenuSelect
+        MenuSelect("ahk_id " hwnd, , "File")
+    } else {
+        MsgBox("No standard menu bar found")
+    }
 }

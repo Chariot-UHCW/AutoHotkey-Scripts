@@ -5,6 +5,7 @@
 #Include sub-processes/hwnd.ahk
 #Include sub-processes/outpatients/tab.ahk
 #Include sub-processes/windowCheck.ahk
+#Include sub-processes/lookFor.ahk
 
 Critical ; Allows keys to be queued one after another
 
@@ -30,16 +31,15 @@ Numpad0:: {
 }
 
 ; Goto Powerchart and navigate to documentation
-; this is the ugliest code ever. if you need to edit this before i re-write it im sorry 😭 
 Numpad1:: {
     if !windowCheck("Power") {
         MsgBox("Window check failed")
         return
     }
 
-    Click(1778, 112)
-    Sleep(200)
-
+    ; Search for "File" menu button
+    lookFor("MRN-Search", 20, 10)
+    
     ; Check clipboard
     If InStr(A_Clipboard, "COPY"){
         MsgBox("Clipboard failed to copy!")
@@ -54,69 +54,38 @@ Numpad1:: {
     Send("{Enter}")
 
     SetTitleMatchMode(2)
+    
+    Sleep(100) ; safety for testing
 
     ; Wait for either relationship or encounter window
-    ; yes there are two separate searches for encounter window, but for now it works so ¯\_(ツ)_/¯
 
-    windowFound := ""
-    startTime := A_TickCount
-    timeout := 5000  ; 5 seconds
-    
-    while (A_TickCount - startTime < timeout) {
-        if WinExist("Rela") {
-            windowFound := "Relationship"
-            break
-        }
-        if WinExist("Selec") {
-            windowFound := "Encounter"
-            break
-        }
-        Sleep(100)
-    }
-    
-    ; Handle relationship window if found
-    if (windowFound = "Relationship") {
-        WinActivate("Rela")
-        Sleep(200)
-        Send("{Enter}")
-        Sleep(500)
-        
-        ; Now wait for encounter window
-        if WinWait("Selec", , 5) {
-            WinActivate("Selec")
-        
-        ; Keep sending Enter until window closes
-        while WinExist("Selec") {
-            WinActivate("Selec")
+    loop { ; Loop felt like the best way to do this, tenfold better than the old method
+        if WinExist("Relationship") {
+            WinActivate("Relationship")
             Send("{Enter}")
-            Sleep(250)
+            ; no break here, it should stay in the loop until encounter window is found.
         }
+        else if WinExist("Encounter Selection") {
+            ToolTip("encounter found")
+            loop { ; Closes the 'Encounter Selection' Window, normally its stubborn so i assumed a loop was required, however it might not be? will test at a later time.
+                if WinExist("Encounter Selection") {
+                    WinClose("Encounter Selection")
+                    Sleep(100) ; Stops killing the CPU in this loop
+                } 
+                else {
+                    break  ; Exit this loop once closed.
+                }
+            }
+            break ; breaks from the main loop once encounter selection has passed.
         }
+        Sleep(100) ; Stops killing the CPU on the main loop
     }
-; Handle encounter window if found (skip relationship)
-    else if (windowFound = "Encounter") {
-        WinActivate("Selec")
-        Sleep(50)
-        
-        ; Keep sending Enter until window closes
-        while WinExist("Selec") {
-            WinActivate("Selec")
-            Send("{Enter}")
-            Sleep(100)
-        }
-    }
-    ; Neither window found
-    else {
-        MsgBox("Cannot find 'Assign A Relationship' or 'Encounter Selection' window")
-        Return
-    }
-    
+
     ; Click first documentation entry
-    CoordMode("Mouse", "Screen")
-    MouseMove(2151, 371)
-    Click()
+    Sleep(200)
+    lookFor("service-date", 20, 30)
 
-    Sleep(100) ; Sleep for queue of processes.
+    Sleep(100) ; Sleep so queues dont overlap
 }
 
 ; Goto Revenue Cycle window and paste MRN
@@ -135,7 +104,7 @@ Numpad2:: {
 
     ; No need to add naviagation to past appointments, as you can set that manually in Revenue Cycle in View > Perspective Layout > Save
 
-    Sleep(100) ; Sleep for queue of processes.
+    Sleep(100)  ; Sleep so queues dont overlap
 }
 
 ; Goto Appointment Book window and paste MRN

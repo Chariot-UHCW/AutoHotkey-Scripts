@@ -78,5 +78,5 @@ clipboardDistance := 10 ; How far down on the screen should the clipboards start
 
 ; DQ Action message
 +`:: {
-    Send("Actioned by DQ/DSG (Data Quality Team / Data Solutions Group) - DSG@uhcw.nhs.uk")
+    Send("Actioned by DQ (Data Quality Team)")
 }
