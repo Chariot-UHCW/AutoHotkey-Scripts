@@ -1,126 +1,186 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-; --------------------
-; Variables - Load from INI if it exists
-; --------------------
-global partialBrowserTitle, outpatientTabTitle, eReferralTabTitle, maxTabSwitches, legacySheet, initials, clipboardDistance
+; ============================================================================
+; GLOBAL VARIABLES
+; ============================================================================
+global partialBrowserTitle, outpatientTabTitle, eReferralTabTitle
+global maxTabSwitches, legacySheet, initials, clipboardDistance
+global configPath := A_ScriptDir "\config.ini"
 
-; Get the directory of this script file
-guiDir := RegExReplace(A_LineFile, "\\[^\\]*$", "")
-configPath := guiDir "\config.ini"
+; ============================================================================
+; INITIALIZATION
+; ============================================================================
+LoadSettings()
+CreateMainGUI()
 
-; Load from INI file
-if FileExist(configPath) {
-    partialBrowserTitle := IniRead(configPath, "Browser", "PartialBrowserTitle", "edge")
-    outpatientTabTitle := IniRead(configPath, "Reports", "OutpatientTabTitle", "new report")
-    eReferralTabTitle := IniRead(configPath, "Reports", "EReferralTabTitle", "e-re")
-    maxTabSwitches := IniRead(configPath, "Browser", "MaxTabSwitches", "10")
-    legacySheet := IniRead(configPath, "Reports", "LegacySheet", "0")
-    initials := IniRead(configPath, "User", "Initials", "DEFAULT NAME")
-    clipboardDistance := IniRead(configPath, "User", "ClipboardDistance", "10")
-} else { ; defaults for if config.ini does not exist yet
-    partialBrowserTitle := "edge"
-    outpatientTabTitle := "new report"
-    eReferralTabTitle := "e-re"
-    maxTabSwitches := "10"
-    legacySheet := "0"
-    initials := "DEFAULT NAME"
-    clipboardDistance := "10"
+; ============================================================================
+; GUI CREATION
+; ============================================================================
+CreateMainGUI() {
+    global mainGui := Gui()
+    mainGui.Title := "Master Script Runner"
+    mainGui.OnEvent("Close", (*) => ExitApp())
+    
+    ; Create tabs
+    tab := mainGui.Add("Tab3", "x10 y10 w500 h800", ["Scripts", "Settings", "Info"])
+    
+    CreateScriptsTab(tab)
+    CreateSettingsTab(tab)
+    CreateInfoTab(tab)
+    
+    tab.UseTab()
+    mainGui.Show("w520 h840")
 }
 
-; --------------------
-; Create Main GUI
-; --------------------
-mainGui := Gui()
-mainGui.Title := "Master Script Runner"
-mainGui.OnEvent("Close", (*) => ExitApp())
+; ============================================================================
+; TAB 1: SCRIPTS
+; ============================================================================
+CreateScriptsTab(tab) {
+    tab.UseTab(1)
+    
+    mainGui.Add("Text", "x20 y40 w460", "Available Scripts:")
+    
+    global scriptList := mainGui.Add("ListBox", "x20 y+5 w460 h200 vScriptList")
+    PopulateScripts()
+    
+    mainGui.Add("Button", "x20 y+10 w150 h30", "Launch Selected").OnEvent("Click", LaunchScript)
+    mainGui.Add("Button", "x+10 yp w150 h30", "Refresh List").OnEvent("Click", (*) => PopulateScripts())
+    mainGui.Add("Button", "x+10 yp w140 h30", "Open Scripts Folder").OnEvent("Click", (*) => Run(A_ScriptDir "\public"))
+    
+    mainGui.Add("Text", "x20 y+10", "Quick Actions:")
+    mainGui.Add("Button", "x20 y+5 w220 h30", "Send DQ Action Message").OnEvent("Click", SendDQMessage)
+}
 
-; Add tabs for organization
-tab := mainGui.Add("Tab3", "x10 y10 w500 h400", ["Scripts", "Settings", "Info"])
+; ============================================================================
+; TAB 2: SETTINGS
+; ============================================================================
+CreateSettingsTab(tab) {
+    tab.UseTab(2)
+    
+    ; Browser Settings
+    CreateGroupBoxWithControls("Browser Settings", 20, 40, 460, [
+        {type: "Text", opts: "x30 yp+20", text: "Browser Title:"},
+        {type: "Edit", opts: "x+10 yp w200 vPartialBrowserTitle", text: partialBrowserTitle},
+        {type: "Text", opts: "x30 y+10", text: "Max Tab Switches:"},
+        {type: "Edit", opts: "x+10 yp w60 vMaxTabSwitches Number", text: maxTabSwitches}
+    ])
+    
+    ; Report Settings
+    CreateGroupBoxWithControls("Report Settings", 20, "", 460, [
+        {type: "Text", opts: "x30 yp+20", text: "Outpatient Tab Title:"},
+        {type: "Edit", opts: "x+10 yp w200 vOutpatientTabTitle", text: outpatientTabTitle},
+        {type: "Text", opts: "x30 y+10", text: "eReferral Tab Title:"},
+        {type: "Edit", opts: "x+10 yp w200 vEReferralTabTitle", text: eReferralTabTitle},
+        {type: "Checkbox", opts: "x30 y+10 vLegacySheet Checked" . legacySheet, text: "Legacy Sheet (no Attendance ID)"}
+    ])
+    
+    ; User Settings
+    CreateGroupBoxWithControls("User Settings", 20, "", 460, [
+        {type: "Text", opts: "x30 yp+20", text: "Your Initials:"},
+        {type: "Edit", opts: "x+10 yp w100 vInitials", text: initials},
+        {type: "Text", opts: "x+10 yp", text: "Clipboard Distance:"},
+        {type: "Edit", opts: "x+10 yp w60 vClipboardDistance Number", text: clipboardDistance}
+    ])
 
-; --------------------
-; TAB 1: Script Launcher
-; --------------------
-tab.UseTab(1)
-mainGui.Add("Text", "x20 y40 w460", "Available Scripts:")
+    mainGui.Add("Button", "x360 y+10 w120 h30", "Save Settings").OnEvent("Click", SaveSettings)
+}
 
-; List available scripts in ./public/
-scriptList := mainGui.Add("ListBox", "x20 y60 w460 h200 vScriptList")
-PopulateScripts()
+; ============================================================================
+; TAB 3: INFO
+; ============================================================================
+CreateInfoTab(tab) {
+    tab.UseTab(3)
+    
+    CreateAutoSizedGroupBox("Info", 20, 40, 460,
+        "This gui SUCKED to edit.`n" .
+        "Sorry for its bad formatting."
+    )
+    
+    CreateAutoSizedGroupBox("Prereqs / Notes", 20, "", 460,
+        "- turn numlock on `n" .
+        "- note the kill command at the bottom to close instantly `n" . 
+        "- appointment book searching in OP is weird right now, dont use `n"
+        "- enter a MRN once manually on each app before using the script, as the apps are slow on first search which can make the script act weird `n" . 
+        "- change the variables on the settings tab `n" .
+        "- try refrain from using multiple scripts, some override each other `n" .
+        "- both clippy scripts are placed weirdly, will allow more customisation soon `n" .
+        "- --- Most importantly ---- be careful, chances are this code will do something unexpected to you, so sorry in advance for lack of documentation."
+    )
+    
+    CreateAutoSizedGroupBox("Keys", 20, "", 460,
+        "Master Workflow Script (global) `n"
+        "- ` (backtick) - Kill script(s) immediately `n"
+        "- ` (backtick) + Shift - Send DQ signature `n"
+        "`n"
 
-mainGui.Add("Button", "x20 y270 w150 h30", "Launch Selected").OnEvent("Click", LaunchScript)
-mainGui.Add("Button", "x180 y270 w150 h30", "Refresh List").OnEvent("Click", (*) => PopulateScripts())
-mainGui.Add("Button", "x340 y270 w140 h30", "Open Scripts Folder").OnEvent("Click", (*) => Run(A_ScriptDir "\public"))
+        "Clippy `n"
+        "- F1-F9 - Paste from clipboard slots 1-9 `n"
+        "- F10 - Clear all clipboard slots and tooltips `n"
+        "- STATIONARY will use the values put in settings (when i add it soon) `n"
+        "- ADAPT will override the next slot each time you copy, allowing storage of the 9 most recent clipboard snippets `n"
+        "`n"
 
-mainGui.Add("Text", "x20 y310", "Quick Actions:")
-mainGui.Add("Button", "x20 y330 w220 h30", "Send DQ Action Message").OnEvent("Click", SendDQMessage)
+        "Outpatients `n"
+        "- Numpad0 - Grabs next MRN `n"
+        "- Numpad1 - Powerchart Documentation `n"
+        "- Numpad2 - Revenue Cycle Summary `n"
+        "- Numpad3 - Appointment book list (broken rn) `n"
+        "- CTRL + Numpad1 - From the MRN column will enter 'No Documentation', name, and date `n"
+        "- CTRL + Numpad2 - Same as above, but enters 'Checked Out' `n"
+        "- CTRL + Numpad3 - Same as above, but enters 'Already Checked Out' `n"
+        "- CTRL + Numpad4 - Same as above, but enters 'DNA' `n"
+        "- CTRL + Numpad5 - Same as above, but enters 'DNA No Doc' `n"
+        "- CTRL + Numpad6 - Same as above, but enters 'Checkout No Doc' `n"
+        "`n"
 
-; --------------------
-; TAB 2: Settings
-; --------------------
-tab.UseTab(2)
+        "ERS `n"
+        "This script is in beta, so you should not use it right now.`n"
 
-; Browser settings
-mainGui.Add("GroupBox", "x20 y40 w460 h90", "Browser Settings")
-mainGui.Add("Text", "x30 y60", "Browser Title:")
-mainGui.Add("Edit", "x150 y58 w200 vPartialBrowserTitle", partialBrowserTitle)
-mainGui.Add("Text", "x30 y90", "Max Tab Switches:")
-mainGui.Add("Edit", "x150 y88 w60 vMaxTabSwitches Number", maxTabSwitches)
+    )
+}
 
-; Report settings
-mainGui.Add("GroupBox", "x20 y140 w460 h120", "Report Settings")
-mainGui.Add("Text", "x30 y160", "Outpatient Tab Title:")
-mainGui.Add("Edit", "x150 y158 w200 vOutpatientTabTitle", outpatientTabTitle)
-mainGui.Add("Text", "x30 y190", "eReferral Tab Title:")
-mainGui.Add("Edit", "x150 y188 w200 vEReferralTabTitle", eReferralTabTitle)
-mainGui.Add("Checkbox", "x30 y220 vLegacySheet Checked" . legacySheet, "Legacy Sheet (no Attendance ID)")
+; ============================================================================
+; HELPER FUNCTIONS
+; ============================================================================
 
-; User settings
-mainGui.Add("GroupBox", "x20 y270 w460 h80", "User Settings")
-mainGui.Add("Text", "x30 y290", "Your Initials:")
-mainGui.Add("Edit", "x150 y288 w100 vInitials", initials)
-mainGui.Add("Text", "x270 y290", "Clipboard Distance:")
-mainGui.Add("Edit", "x380 y288 w60 vClipboardDistance Number", clipboardDistance)
+; Creates a GroupBox with controls and auto-adjusts height
+CreateGroupBoxWithControls(title, x, y, width, controls) {
+    yPos := (y = "") ? "y+40" : "y" y
+    gb := mainGui.Add("GroupBox", "x" x " " yPos " w" width, title)
+    
+    lastControl := ""
+    for ctrl in controls {
+        lastControl := mainGui.Add(ctrl.type, ctrl.opts, ctrl.text)
+    }
+    
+    if (lastControl != "") {
+        AutoSizeGroupBox(gb, lastControl)
+    }
+}
 
-; Save button
-mainGui.Add("Button", "x360 y360 w120 h30", "Save Settings").OnEvent("Click", SaveSettings)
+; Creates a GroupBox with text content and auto-adjusts height
+CreateAutoSizedGroupBox(title, x, y, width, content) {
+    yPos := (y = "") ? "y+40" : "y" y
+    gb := mainGui.Add("GroupBox", "x" x " " yPos " w" width, title)
+    txtControl := mainGui.Add("Text", "x" (x+10) " yp+20 w" (width-20), content)
+    
+    txtControl.GetPos(,, &w, &h)
+    gb.Move(,, width, h + 30)
+}
 
-; --------------------
-; TAB 3: Info
-; --------------------
-tab.UseTab(3)
+; Auto-sizes a GroupBox to fit its last control
+AutoSizeGroupBox(groupBox, lastControl) {
+    groupBox.GetPos(, &gby,,)
+    lastControl.GetPos(, &lcty,, &lcth)
+    groupBox.Move(,, , lcty + lcth - gby + 15)
+}
 
-mainGui.Add("GroupBox", "x20 y40 w460", "About This Application")
-mainGui.Add("Text", "x30 yp+20 w440",
-    "Info here.`n" .
-    "soon."
-)
+; ============================================================================
+; SCRIPT MANAGEMENT FUNCTIONS
+; ============================================================================
 
-mainGui.Add("GroupBox", "x20 y+10 w460", "Features")
-mainGui.Add("Text", "x30 yp+20 w440",
-    "- bunch of text `n" .
-    "- bunch of text `n" .
-    "- bunch of text `n" .
-    "- bunch of text `n" .
-    "- more `n"
-)
-
-mainGui.Add("GroupBox", "x20 y+10 w460 h80", "Support")
-mainGui.Add("Text", "x30 yp+20 w440", "For issues or questions, check the config.ini file`nin the script directory for configuration options.")
-
-
-tab.UseTab() ; End tabs
-
-; Show the GUI
-mainGui.Show("w520 h440")
-
-; --------------------
-; Functions
-; --------------------
 PopulateScripts() {
-    global scriptList
-    scriptList := mainGui["ScriptList"]
     scriptList.Delete()
     
     if DirExist(A_ScriptDir "\public") {
@@ -133,7 +193,6 @@ PopulateScripts() {
 }
 
 LaunchScript(*) {
-    scriptList := mainGui["ScriptList"]
     selectedIndex := scriptList.Value
     
     if (selectedIndex = 0) {
@@ -141,7 +200,6 @@ LaunchScript(*) {
         return
     }
     
-    ; Use .Text property to get selected item
     selectedScript := scriptList.Text
     scriptPath := A_ScriptDir "\public\" selectedScript
     
@@ -158,8 +216,11 @@ SendDQMessage(*) {
     MsgBox("DQ message sent!", "Success", "Iconi T1")
 }
 
+; ============================================================================
+; SETTINGS MANAGEMENT
+; ============================================================================
+
 SaveSettings(*) {
-    ; Get values from GUI
     Saved := mainGui.Submit(false)
     
     ; Update global variables
@@ -171,7 +232,7 @@ SaveSettings(*) {
     global initials := Saved.Initials
     global clipboardDistance := Saved.ClipboardDistance
     
-    ; Save to INI file for persistence
+    ; Save to INI file
     IniWrite(partialBrowserTitle, configPath, "Browser", "PartialBrowserTitle")
     IniWrite(outpatientTabTitle, configPath, "Reports", "OutpatientTabTitle")
     IniWrite(eReferralTabTitle, configPath, "Reports", "EReferralTabTitle")
@@ -179,23 +240,32 @@ SaveSettings(*) {
     IniWrite(legacySheet, configPath, "Reports", "LegacySheet")
     IniWrite(initials, configPath, "User", "Initials")
     IniWrite(clipboardDistance, configPath, "User", "ClipboardDistance")
-
-    ToolTip("Settings saved!",,, 1,)
-    SetTimer () => ToolTip(), -1000
+    
+    ToolTip("Settings saved!",,, 1)
+    SetTimer(() => ToolTip(), -1000)
 }
 
-; Load settings from INI on startup
 LoadSettings() {
-    global
-    if FileExist(configPath) {
-        partialBrowserTitle := IniRead(configPath, "Browser", "PartialBrowserTitle", partialBrowserTitle)
-        outpatientTabTitle := IniRead(configPath, "Reports", "OutpatientTabTitle", outpatientTabTitle)
-        eReferralTabTitle := IniRead(configPath, "Reports", "EReferralTabTitle", eReferralTabTitle)
-        maxTabSwitches := IniRead(configPath, "Browser", "MaxTabSwitches", maxTabSwitches)
-        legacySheet := IniRead(configPath, "Reports", "LegacySheet", legacySheet)
-        initials := IniRead(configPath, "User", "Initials", initials)
-        clipboardDistance := IniRead(configPath, "User", "ClipboardDistance", clipboardDistance)
+    if !FileExist(configPath) {
+        SetDefaultSettings()
+        return
     }
+    
+    global partialBrowserTitle := IniRead(configPath, "Browser", "PartialBrowserTitle", "edge")
+    global outpatientTabTitle := IniRead(configPath, "Reports", "OutpatientTabTitle", "new report")
+    global eReferralTabTitle := IniRead(configPath, "Reports", "EReferralTabTitle", "e-re")
+    global maxTabSwitches := IniRead(configPath, "Browser", "MaxTabSwitches", "10")
+    global legacySheet := IniRead(configPath, "Reports", "LegacySheet", "0")
+    global initials := IniRead(configPath, "User", "Initials", "DEFAULT NAME")
+    global clipboardDistance := IniRead(configPath, "User", "ClipboardDistance", "10")
 }
 
-LoadSettings()
+SetDefaultSettings() {
+    global partialBrowserTitle := "edge"
+    global outpatientTabTitle := "new report"
+    global eReferralTabTitle := "e-re"
+    global maxTabSwitches := "10"
+    global legacySheet := "0"
+    global initials := "DEFAULT NAME"
+    global clipboardDistance := "10"
+}
