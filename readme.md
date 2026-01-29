@@ -11,7 +11,11 @@ git pull
 ```
 
 TODO:
-reorganise folder/file structure
-fix ugly gui
-make appointment book opening cleaner / add more checks and catches to open if its not perfectly set up
-properly incorperate all finished /beta/ processes
+
+reorganise folder/file structure.
+
+fix ugly gui.
+
+make appointment book opening cleaner / add more checks and catches to open if its not perfectly set up.
+
+properly incorperate all finished /beta/ processes.
