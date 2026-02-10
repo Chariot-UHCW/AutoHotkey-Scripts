@@ -1,9 +1,10 @@
-windowCheck(windowTitle) { ; focuses a window if windowTitle matches the app name
+windowCheck(windowTitle) {
+    SetTitleMatchMode(2)
+
     if WinExist(windowTitle) {
-        WinActivate(windowTitle)
-        return true   ; output for "if windowCheck()..."
-    }
-    else {
+        WinActivate()
+        return true   ; explicitly return true if found
+    } else {
         MsgBox("Window not found: " windowTitle)
         return false  ; explicitly return false if not found
     }

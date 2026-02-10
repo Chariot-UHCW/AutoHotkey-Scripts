@@ -1,3 +1,3 @@
-#Include HyprlandEmulation.ahk
+#Include FindImage.ahk
 #Include ToolTipTimer.ahk
 #Include WindowCheck.ahk

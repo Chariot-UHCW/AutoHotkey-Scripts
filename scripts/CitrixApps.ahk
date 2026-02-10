@@ -3,20 +3,32 @@
 #Include ../dependencies/_all.ahk
 
 Numpad1:: {
-    ToolTipTimer("Not Implemented Yet", 1)
-}
-
-Numpad2:: {
     if !windowCheck("Revenue Cycle") {
         return
     }
 
-    ToolTipTimer("Opening Revenue Cycle", 1)
-
-    Click(31, 57) ; Search Bar
+    Click(31, 57)
     Send("^v")
     Sleep(200)
     Send("{Enter}")
     Sleep(500)
     Send("{Enter}")
+}
+
+Numpad2:: {
+    ToolTipTimer("Powerchart", 1)
+    if !windowCheck("Revenue Cycle") {
+        return
+    }
+
+    if !FindImage("task") {
+        ToolTipTimer("??? - No task image found", 5)
+        return
+    }
+
+    Sleep(50)
+    Send("p") ; p for 'Powerchart'
+    Sleep(50)
+    Send("{Enter}")
+    ToolTipTimer("Success", 1)
 }

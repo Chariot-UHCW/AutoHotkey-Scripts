@@ -21,13 +21,7 @@ MyGui.Add("Button", "Default w100", "Refresh Scripts").OnEvent("Click", LoadScri
 ; Places the following elements in tab 2 (Info)
 Tab.UseTab(2)
 
-; Mark the GroupBox as a Section reference point
-myGui.Add("GroupBox", "x20 y40 w200 h100 Section", "Settings")
-
-; xs/ys refer to the Section start, with offsets
-myGui.Add("Text", "xs+10 ys+30", "First item")
-myGui.Add("Edit", "xs+10 yp+50 w180")  ; yp = y previous
-myGui.Add("Checkbox", "xp yp+50", "Enable feature")
+myGui.Add("Text", , "Will add info here soon")
 
 
 ; Places the following elements in tab 3 (Config)
