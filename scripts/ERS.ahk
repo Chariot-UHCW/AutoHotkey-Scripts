@@ -5,46 +5,44 @@
 Home:: OpenMacroGui()
 
 OpenMacroGui() {
-    myGui := Gui("+AlwaysOnTop", "Macro Setup")
-    myGui.SetFont("s10", "Segoe UI")
+    macroGui := Gui("+AlwaysOnTop", "Add Referral Setup")
+    macroGui.SetFont("s10", "Segoe UI")
 
-    myGui.Add("Text", , "UBRN: *")
-    myGui.Add("Edit", "w200 vVar1").OnEvent("Change", (*) => UpdateOkButton(myGui))
+    macroGui.Add("Text", , "UBRN: *")
+    macroGui.Add("Edit", "w200 vUbrn").OnEvent("Change", (*) => UpdateOkButton(macroGui))
 
-    myGui.Add("Text", , "Treatment Function: *")
-    myGui.Add("Edit", "w200 vVar2").OnEvent("Change", (*) => UpdateOkButton(myGui))
+    macroGui.Add("Text", , "Treatment Function: *")
+    macroGui.Add("Edit", "w200 vTreatmentFunction").OnEvent("Change", (*) => UpdateOkButton(macroGui))
 
-    myGui.Add("Text", , "Priority: *")
-    myGui.Add("Edit", "w200 vVar3").OnEvent("Change", (*) => UpdateOkButton(myGui))
+    macroGui.Add("Text", , "Priority: *")
+    macroGui.Add("Edit", "w200 vPriority").OnEvent("Change", (*) => UpdateOkButton(macroGui))
 
-    myGui.Add("Text", , "Reason For Referral: *")
-    myGui.Add("Edit", "w200 vVar4").OnEvent("Change", (*) => UpdateOkButton(myGui))
+    macroGui.Add("Text", , "Reason For Referral: *")
+    macroGui.Add("Edit", "w200 vReasonForReferral").OnEvent("Change", (*) => UpdateOkButton(macroGui))
 
-    myGui.Add("DateTime", "vMyDateTime", "ShortDate")
+    macroGui.AddDateTime("vReferralDate", "dd/MM/yyyy")
 
-    myGui.Add("Text", "cRed", "* Required fields")
+    macroGui.Add("Text", "cRed", "* Required fields")
 
-    ; Add button in disabled state initially
-    okBtn := myGui.Add("Button", "Default w80 vOkBtn Disabled", "OK")
-    okBtn.OnEvent("Click", RunMacro.Bind(myGui))
+    okBtn := macroGui.Add("Button", "Default w80 vOkBtn Disabled", "OK")
+    okBtn.OnEvent("Click", RunMacro.Bind(macroGui))
 
-    myGui.Show("AutoSize Center")
+    macroGui.Show("AutoSize Center")
 }
 
 UpdateOkButton(guiObj) {
-    saved := guiObj.Submit(false)
-    allFilled := (Trim(saved.Var1) != "") && (Trim(saved.Var2) != "") && (Trim(saved.Var3) != "") && (Trim(saved.Var4) != "")
+    fields := guiObj.Submit(false)
+    allFilled := (Trim(fields.Ubrn) != "")
+        && (Trim(fields.TreatmentFunction) != "")
+        && (Trim(fields.Priority) != "")
+        && (Trim(fields.ReasonForReferral) != "")
     guiObj["OkBtn"].Enabled := allFilled
 }
 
 RunMacro(guiObj, *) {
-    saved := guiObj.Submit()
+    fields := guiObj.Submit()
 
-    var1 := saved.Var1
-    var2 := saved.Var2
-    var3 := saved.Var3
-    var4 := saved.Var4
-
+    shortDate := FormatTime(fields.ReferralDate, "dd/MM/yyyy")
 
     ; --- Execution ---
     if !windowCheck("Add Referral") {
@@ -53,13 +51,10 @@ RunMacro(guiObj, *) {
     }
 
     Send("uni") ; hospital trust
-    Sleep(150)
     Send("{Enter}")
-    Sleep(150)
+    Sleep(50)
     Send("{Enter}") ; add new pathway
-    Sleep(150)
     Send("{Tab}")
-    Sleep(150)
     Send("I") ; indirect cab referral
 
     Send("+{Tab}")
@@ -67,7 +62,7 @@ RunMacro(guiObj, *) {
     Send("+{Tab}")
     Send("+{Tab}")
 
-    Send(var1)
+    Send(fields.Ubrn)
     Send("{Tab}")
     Send("{Tab}")
     Send("{Tab}")
@@ -79,7 +74,7 @@ RunMacro(guiObj, *) {
     Send("{Tab}")
     Send("{Tab}")
     Send("{Tab}")
-    Send(var2) ; treatment function
+    Send(fields.TreatmentFunction) ; treatment function
 
     ;Sleep (1000) ; debug
 
@@ -87,7 +82,7 @@ RunMacro(guiObj, *) {
     Send("{Tab}")
     Send("{Tab}")
     Send("{Tab}")
-    Send(var3) ; priority
+    Send(fields.Priority) ; priority
 
     ;Sleep (1000) ; debug
 
@@ -99,8 +94,7 @@ RunMacro(guiObj, *) {
     Send("{Tab}")
 
     ;
-    ; WILL SEND DATE ONCE ADDED
-    ;
+    Send(shortDate) ; referral date
 
     Send("{Tab}")
     Send("{Tab}")
@@ -108,7 +102,7 @@ RunMacro(guiObj, *) {
     Send("{Tab}")
     Send("{Tab}")
 
-    Send(var4) ; reason for referral
+    Send(fields.ReasonForReferral) ; reason for referral
 
     Send("{Tab}")
     Send("{Tab}")
@@ -119,14 +113,5 @@ RunMacro(guiObj, *) {
     Send("{Tab}")
     Send("{Tab}")
     Send("{Tab}")
-    Send(var4) ; reason for referral *2
-
-    saved.var1 := ""
-    saved.var2 := ""
-    saved.var3 := ""
-    saved.var4 := ""
-    var1 := ""
-    var2 := ""
-    var3 := ""
-    var4 := ""
+    Send(fields.ReasonForReferral) ; reason for referral *2
 }

@@ -30,7 +30,7 @@ Tab.UseTab(3)
 MyGui.Add("Text", , "Initials:")
 ConfInitials := MyGui.Add("Edit", "w200")
 ConfLegacySheet := MyGui.Add("Checkbox", "", "Legacy Sheet (No Attendance ID Column)")
-ConfEmulationHyprland := MyGui.Add("Checkbox", "", "Hyprland Mouse Focus Emulation")
+MyGui.AddHotkey("vHotkeyRevenueCycle")
 ; use ahk 'edit' gui thing for clipboards!
 
 SaveBtn := MyGui.Add("Button", "", "Save Settings")
@@ -67,7 +67,7 @@ LoadCurrentSettings() {
 
     ConfInitials.Value := IniRead(configFile, "Settings", "initials", "")
     ConfLegacySheet.Value := (IniRead(configFile, "Settings", "LegacySheet", "false") = "true") ? 1 : 0
-    ConfEmulationHyprland.Value := (IniRead(configFile, "Settings", "EmulationHyprland", "false") = "true") ? 1 : 0
+    MyGui["HotkeyRevenueCycle"].Value := IniRead(configFile, "CitrixHotkeys", "HotkeyRevenueCycle", "")
 }
 
 SaveSettings(*) {
@@ -75,7 +75,7 @@ SaveSettings(*) {
 
     IniWrite(ConfInitials.Value, configFile, "Settings", "initials")
     IniWrite(ConfLegacySheet.Value ? "true" : "false", configFile, "Settings", "LegacySheet")
-    IniWrite(ConfEmulationHyprland.Value ? "true" : "false", configFile, "Settings", "EmulationHyprland")
+    IniWrite(MyGui["HotkeyRevenueCycle"].Value, configFile, "CitrixHotkeys", "HotkeyRevenueCycle")
 
     ToolTip("Settings saved!")
     SetTimer () => ToolTip(), -1000 ; make tooltip last 1 second

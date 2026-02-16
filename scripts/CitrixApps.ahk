@@ -3,7 +3,7 @@
 #Include ../dependencies/_all.ahk
 
 Numpad1:: {
-    if !windowCheck("Revenue Cycle") {
+    if !windowCheck("Revenue Cycle") { ; calls dependencies/WindowCheck.ahk
         return
     }
 
