@@ -67,6 +67,12 @@ RevenueCycle(*) {
     Send("{Enter}")
     Sleep(500)
     Send("{Enter}")
+
+    if Sudo {
+        WinWait("External MPI Retrieve")
+        WinClose("External MPI Retrieve")
+        ToolTipTimer("Closed", 1)
+    }
 }
 
 try Hotkey PowerChartKey, PowerChart
@@ -82,52 +88,93 @@ PowerChart(*) {
         return
     }
 
-    ; Finish later
+    Send("^v")
+    Send("{Enter}")
+    Sleep(50)
+    Send("{Enter}")
+
+    if Sudo {
+        WinWait("ACCESSIBLE INFO")
+        if !FindImage("PowerChart_Dismiss", "10", "10") {
+            ToolTipTimer("??? - No image found", 5)
+            return
+        }
+    }
+
 
     Sleep(200)
 }
 
 try Hotkey PMOfficeKey, PMOffice
 PMOffice(*) {
-    if !windowCheck("Office") { ; calls dependencies/WindowCheck.ahk
-        return
-    }
+    PMOfficeGUI := Gui("+AlwaysOnTop", "Add Referral Setup")
+    PMOfficeGUI.SetFont("s10", "Segoe UI")
+
+    PMOfficeGUI.Add("Text", , "Make sure clipboard is MRN!")
+
+    okBtn := PMOfficeGUI.Add("Button", "Default vViewEncounter", "View Encounter")
+    okBtn.OnEvent("Click", ViewEncounter.Bind(PMOfficeGUI))
+
+    okBtn := PMOfficeGUI.Add("Button", "Default vInpatientElectiveAdmission", "Inpatient Elective Admission")
+    okBtn.OnEvent("Click", InpatientElectiveAdmission.Bind(PMOfficeGUI))
+
+    PMOfficeGUI.Show("AutoSize Center")
 }
 
-NumpadDel:: { ; temp
+ViewEncounter(guiObj, *) {
+    guiObj.Destroy()
+    ; --- Execution ---
+
+    if !WindowCheck("Access") {
+        ToolTipTimer("Access window not found", 1)
+        return
+    }
+
+    Send("{Down}")
+    Send("{End}") ; does to bottom of list, to see other buttons
+    Sleep(50)
+
+    if !FindImage("PMOffice_ViewEncounter", "10", "10") {
+        ToolTipTimer("??? - No image found", 5)
+        return
+    }
+
+    Send("{Enter}")
+
+    ; finish later
+
+}
+
+InpatientElectiveAdmission(guiObj, *) {
+    fields := guiObj.Submit()
+    guiObj.Destroy()
+    ; --- Execution ---
 }
 
 try Hotkey AppointmentBookKey, AppointmentBook
 AppointmentBook(*) {
-    AppointmentBookGUI := Gui("+AlwaysOnTop", "Appointment Book Search")
-    AppointmentBookGUI.SetFont("s10", "Segoe UI")
-    AppointmentBookGUI.Add("Text", , "MRN: *")
-    MRNEdit := AppointmentBookGUI.Add("Edit", "w200 vMRN")
-    MRNEdit.OnEvent("Change", (*) => UpdateOkButton(AppointmentBookGUI))
-    AppointmentBookGUI.AddDateTime("vStartDate", "dd/MM/" AppointmentBookStartDate) ; defined in master
-    AppointmentBookGUI.AddDateTime("vEndDate", "dd/MM/yyyy")
-    AppointmentBookGUI.Add("Text", "cRed", "* Required fields")
-    okBtn := AppointmentBookGUI.Add("Button", "Default w80 vOkBtn Disabled", "OK")
-    okBtn.OnEvent("Click", RunMacro.Bind(AppointmentBookGUI))
-    AppointmentBookGUI.Show("AutoSize Center")
-}
-
-UpdateOkButton(guiObj) {
-    fields := guiObj.Submit(false)
-    guiObj["OkBtn"].Enabled := fields.MRN != ""
-}
-
-RunMacro(guiObj, *) {
-    fields := guiObj.Submit()
-    ;shortDate := FormatTime(fields.ReferralDate, "dd/MM/yyyy")
-
-    ; real execution
     if !WindowCheck("Standard Patient") {
         return
     }
 
+    Sleep(50)
+
     if !FindImage("AppointmentBook_Ellipsis", 10, 10) {
         return
     }
-    ToolTipTimer("YES", 1)
+
+    Sleep(800)
+
+    if !FindImage("AppointmentBook_Reset", 10, 10) {
+        return
+    }
+
+    Send("^v")
+    Send("{Enter}")
+    Sleep(100)
+    Send("{Enter}")
+
+    Sleep(100)
+    Send(AppointmentBookStartDate)
+    Send("{Enter}")
 }

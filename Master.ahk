@@ -3,101 +3,91 @@
 
 global configFile := A_ScriptDir "\config.ini"
 
-; Base Gui Stuff
-myGui := Gui()
-myGui.Opt("AlwaysOnTop Resize")
-myGui.Title := "Master Script"
+colW := 640
 
-; Scripts
-myGui.Add("Text", "xm y10 w600 h20 0x10") ; horizontal rule
-myGui.Add("Text", "xm y+5 w600 h20 Center", "── Scripts ──")
-myGui.Add("Text", "xm w600 h20 0x10")
+; Left GUI: Scripts & Info
+LeftGui := Gui()
+LeftGui.Opt("AlwaysOnTop Resize")
+LeftGui.Title := "Master Script"
 
-scriptList := myGui.Add("ListBox", "xm y+5 w600 h200 multi")
+LeftGui.AddText("xm y10 w600 0x10")
+LeftGui.AddText("xm y+5 w600 Center", "Scripts")
+LeftGui.AddText("xm w600 0x10")
+
+scriptList := LeftGui.AddListBox("xm y+5 w600 h200 Multi")
 LoadScripts()
 
-myGui.Add("Button", "xm y+8 w180", "Open Script").OnEvent("Click", OpenScript)
-myGui.Add("Button", "x+10 yp w180", "Refresh Scripts").OnEvent("Click", LoadScripts)
-myGui.Add("Button", "x+10 yp w180", "Close All Scripts [Soon]").OnEvent("Click", CloseAllScripts)
+LeftGui.AddButton("xm y+8 w180", "Open Script").OnEvent("Click", OpenScript)
+LeftGui.AddButton("x+10 yp w180", "Refresh Scripts").OnEvent("Click", LoadScripts)
+LeftGui.AddButton("x+10 yp w180", "Close All Scripts [Soon]").OnEvent("Click", CloseAllScripts)
 
-; ── General Config Section ───────────────────────────────────────
-myGui.Add("Text", "xm y+20 w600 h20 0x10")
-myGui.Add("Text", "xm y+5 w600 h20 Center", "── General Config ──")
-myGui.Add("Text", "xm w600 h20 0x10")
+LeftGui.AddText("xm y+20 w600 0x10")
+LeftGui.AddText("xm y+5 w600 Center", "Info")
+LeftGui.AddText("xm w600 0x10")
+LeftGui.AddText("xm y+5 w600", "Will add info here soon")
 
-myGui.Add("Text", "xm y+10 w200", "Browser Name:")
-ConfBrowser := myGui.Add("Edit", "x+10 yp-3 w380 vConfBrowser")
+; Right GUI: Config & Hotkeys
+RightGui := Gui()
+RightGui.Opt("AlwaysOnTop Resize")
+RightGui.Title := "Master Script - Config"
 
-myGui.Add("Text", "xm y+10 w200", "Initials:")
-ConfInitials := myGui.Add("Edit", "x+10 yp-3 w380 vConfInitials")
+RightGui.AddText("xm y10 w600 0x10")
+RightGui.AddText("xm y+5 w600 Center", "General Config")
+RightGui.AddText("xm w600 0x10")
 
-myGui.Add("Text", "xm y+10 w200", "Appt. Book Default Start Date:")
-ConfAppointmentBookStartDate := myGui.Add("Edit", "x+10 yp-3 w380 vConfAppointmentBookStartDate")
+RightGui.AddText("xm y+10 w200", "Browser Name:")
+RightGui.AddEdit("x+10 yp-3 w380 vConfBrowser")
 
-ConfLegacySheet := myGui.Add("Checkbox", "xm y+10 w600", "Legacy Sheet (No Attendance ID Column)")
+RightGui.AddText("xm y+10 w200", "Initials:")
+RightGui.AddEdit("x+10 yp-3 w380 vConfInitials")
 
-; ── Hotkeys Section ──────────────────────────────────────────────
-myGui.Add("Text", "xm y+20 w600 h20 0x10")
-myGui.Add("Text", "xm y+5 w600 h20 Center", "── Hotkeys ──")
-myGui.Add("Text", "xm w600 h20 0x10")
+RightGui.AddText("xm y+10 w200", "Appt. Book Default Start Date:")
+RightGui.AddEdit("x+10 yp-3 w380 vConfAppointmentBookStartDate")
 
-myGui.Add("Text", "xm y+10 w200", "Enter Outcome: [WIP]")
-HotkeyEnterOutcome := myGui.Add("Hotkey", "x+10 yp-3 w380 vHotkeyEnterOutcome")
+RightGui.AddCheckbox("xm y+10 w300 vConfLegacySheet", "Legacy Sheet (No Attendance ID Column)")
+RightGui.AddCheckbox("x+0 yp w300 vConfSudo", "Super User Apps")
 
-myGui.Add("Text", "xm y+10 w200", "Revenue Cycle:")
-HotkeyRevenueCycle := myGui.Add("Hotkey", "x+10 yp-3 w380 vHotkeyRevenueCycle")
+RightGui.AddText("xm y+20 w600 0x10")
+RightGui.AddText("xm y+5 w600 Center", "Hotkeys")
+RightGui.AddText("xm w600 0x10")
 
-myGui.Add("Text", "xm y+10 w200", "PowerChart:")
-HotkeyPowerChart := myGui.Add("Hotkey", "x+10 yp-3 w380 vHotkeyPowerChart")
-
-myGui.Add("Text", "xm y+10 w200", "Appointment Book: [WIP]")
-HotkeyAppointmentBook := myGui.Add("Hotkey", "x+10 yp-3 w380 vHotkeyAppointmentBook")
-
-myGui.Add("Text", "xm y+10 w200", "PM Office:")
-HotkeyPMOffice := myGui.Add("Hotkey", "x+10 yp-3 w380 vHotkeyPMOffice")
-
-myGui.Add("Text", "xm y+10 w200", "Add Referral:")
-HotkeyAddReferral := myGui.Add("Hotkey", "x+10 yp-3 w380 vHotkeyAddReferral")
-
-; ── Save / Reset ─────────────────────────────────────────────────
-myGui.Add("Text", "xm y+20 w600 h20 0x10")
-
-ResetBtn := myGui.Add("Button", "xm y+8 w180", "Reset Hotkeys")
-SaveBtn := myGui.Add("Button", "x+10 yp w180", "Save Settings")
-ResetBtn.OnEvent("Click", ResetHotkeys)
-SaveBtn.OnEvent("Click", SaveSettings)
-
-; ── Info ─────────────────────────────────────────────────────────
-myGui.Add("Text", "xm y+20 w600 h20 0x10")
-myGui.Add("Text", "xm y+5 w600 Center", "── Info ──")
-myGui.Add("Text", "xm w600 h20 0x10")
-myGui.Add("Text", "xm y+5 w600", "Will add info here soon")
-
-; Load current settings and show
-LoadCurrentSettings()
-myGui.Show("w640")
-
-; ── Resize handler so the ListBox and edits stretch with the window ──
-myGui.OnEvent("Size", OnGuiSize)
-
-OnGuiSize(GuiObj, MinMax, Width, Height) {
-    if MinMax = -1
-        return
-    innerW := Width - 40
-    scriptList.Move(, , innerW)
-    ConfBrowser.Move(, , innerW - 210)
-    ConfInitials.Move(, , innerW - 210)
-    ConfAppointmentBookStartDate.Move(, , innerW - 210)
-    ConfLegacySheet.Move(, , innerW)
-    HotkeyEnterOutcome.Move(, , innerW - 210)
-    HotkeyRevenueCycle.Move(, , innerW - 210)
-    HotkeyPowerChart.Move(, , innerW - 210)
-    HotkeyAppointmentBook.Move(, , innerW - 210)
-    HotkeyPMOffice.Move(, , innerW - 210)
-    HotkeyAddReferral.Move(, , innerW - 210)
+for entry in [
+    ["Enter Outcome: [WIP]", "vHotkeyEnterOutcome"],
+    ["Revenue Cycle:", "vHotkeyRevenueCycle"],
+    ["PowerChart:", "vHotkeyPowerChart"],
+    ["Appointment Book: [WIP]", "vHotkeyAppointmentBook"],
+    ["PM Office:", "vHotkeyPMOffice"],
+    ["Add Referral:", "vHotkeyAddReferral"]
+] {
+    RightGui.AddText("xm y+10 w200", entry[1])
+    RightGui.AddHotkey("x+10 yp-3 w380 " entry[2])
 }
 
-; ── Scripts ──────────────────────────────────────────────────────
+RightGui.AddText("xm y+20 w600 0x10")
+RightGui.AddButton("xm y+8 w180", "Reset Hotkeys").OnEvent("Click", ResetHotkeys)
+RightGui.AddButton("x+10 yp w180", "Save Settings").OnEvent("Click", SaveSettings)
+
+; Show both GUIs side by side
+LoadCurrentSettings()
+
+LeftGui.Show("w" colW " x100 y100")
+WinGetPos(&lx, &ly, &lw, , LeftGui.Hwnd)
+RightGui.Show("w" colW " x" (lx + lw) " y" ly)
+
+OnMessage(0x0003, WM_MOVE)
+
+WM_MOVE(wParam, lParam, msg, hwnd) {
+    if (hwnd = LeftGui.Hwnd) {
+        WinGetPos(&lx, &ly, &lw, , LeftGui.Hwnd)
+        RightGui.Show("x" (lx + lw) " y" ly)
+    } else if (hwnd = RightGui.Hwnd) {
+        WinGetPos(&rx, &ry, , , RightGui.Hwnd)
+        WinGetPos(, , &lw, , LeftGui.Hwnd)
+        LeftGui.Show("x" (rx - lw) " y" ry)
+    }
+}
+
+; Script Functions
 
 LoadScripts(*) {
     scriptList.Delete()
@@ -105,75 +95,76 @@ LoadScripts(*) {
         scriptList.Add(["Cannot find ./scripts folder"])
         return
     }
-    Loop Files, A_ScriptDir "\scripts\*.ahk" {
+    Loop Files, A_ScriptDir "\scripts\*.ahk"
         scriptList.Add([A_LoopFileName])
-    }
 }
 
 OpenScript(*) {
-    if (scriptList.Value = 0) {
+    if !scriptList.Value {
         ToolTip("No script selected")
         SetTimer(() => ToolTip(), -1000)
         return
     }
-    fileName := scriptList.Text[1]
-    fullPath := A_ScriptDir "\scripts\" fileName
-    if !IsScriptRunning(fileName)
+    fullPath := A_ScriptDir "\scripts\" scriptList.Text[1]
+    if !WinExist(fullPath)
         Run('"' A_AhkPath '" "' fullPath '"')
 }
 
 CloseAllScripts(*) {
     Loop Files, A_ScriptDir "\scripts\*.ahk" {
-        if (A_LoopFileName = "Master.ahk")
-            continue
-        if IsScriptRunning(A_LoopFileName)
-            WinClose(A_ScriptDir "\scripts\" A_LoopFileName)
+        fullPath := A_ScriptDir "\scripts\" A_LoopFileName
+        if WinExist(fullPath)
+            WinClose(fullPath)
     }
 }
 
-IsScriptRunning(fileName) {
-    return WinExist(A_ScriptDir "\scripts\" fileName)
-}
-
-; ── Settings ─────────────────────────────────────────────────────
+; Settings Functions
 
 LoadCurrentSettings() {
-    ConfBrowser.Value := IniRead(configFile, "Settings", "browser", "")
-    ConfInitials.Value := IniRead(configFile, "Settings", "initials", "")
-    ConfLegacySheet.Value := (IniRead(configFile, "Settings", "LegacySheet", "false") = "true") ? 1 : 0
-    ConfAppointmentBookStartDate.Value := IniRead(configFile, "Settings", "AppointmentBookStartDate", "")
-
-    HotkeyEnterOutcome.Value := IniRead(configFile, "Hotkeys", "EnterOutcome", "")
-    HotkeyRevenueCycle.Value := IniRead(configFile, "Hotkeys", "RevenueCycle", "")
-    HotkeyPowerChart.Value := IniRead(configFile, "Hotkeys", "PowerChart", "")
-    HotkeyPMOffice.Value := IniRead(configFile, "Hotkeys", "PMOffice", "")
-    HotkeyAddReferral.Value := IniRead(configFile, "Hotkeys", "AddReferral", "")
+    saved := {
+        ConfBrowser: IniRead(configFile, "Settings", "browser", ""),
+        ConfInitials: IniRead(configFile, "Settings", "initials", ""),
+        ConfAppointmentBookStartDate: IniRead(configFile, "Settings", "AppointmentBookStartDate", ""),
+        ConfLegacySheet: IniRead(configFile, "Settings", "LegacySheet", "false") = "true" ? 1 : 0,
+        ConfSudo: IniRead(configFile, "Settings", "Sudo", "false") = "true" ? 1 : 0,
+        HotkeyEnterOutcome: IniRead(configFile, "Hotkeys", "EnterOutcome", ""),
+        HotkeyRevenueCycle: IniRead(configFile, "Hotkeys", "RevenueCycle", ""),
+        HotkeyPowerChart: IniRead(configFile, "Hotkeys", "PowerChart", ""),
+        HotkeyAppointmentBook: IniRead(configFile, "Hotkeys", "AppointmentBook", ""),
+        HotkeyPMOffice: IniRead(configFile, "Hotkeys", "PMOffice", ""),
+        HotkeyAddReferral: IniRead(configFile, "Hotkeys", "AddReferral", "")
+    }
+    for key, val in saved.OwnProps()
+        RightGui[key].Value := val
 }
 
 SaveSettings(*) {
-    IniWrite(ConfBrowser.Value, configFile, "Settings", "browser")
-    IniWrite(ConfInitials.Value, configFile, "Settings", "initials")
-    IniWrite(ConfLegacySheet.Value ? "true" : "false", configFile, "Settings", "LegacySheet")
-    IniWrite(ConfAppointmentBookStartDate.Value, configFile, "Settings", "AppointmentBookStartDate")
+    s := RightGui.Submit(false)
 
-    IniWrite(HotkeyEnterOutcome.Value, configFile, "Hotkeys", "EnterOutcome")
-    IniWrite(HotkeyRevenueCycle.Value, configFile, "Hotkeys", "RevenueCycle")
-    IniWrite(HotkeyPowerChart.Value, configFile, "Hotkeys", "PowerChart")
-    IniWrite(HotkeyPMOffice.Value, configFile, "Hotkeys", "PMOffice")
-    IniWrite(HotkeyAddReferral.Value, configFile, "Hotkeys", "AddReferral")
+    IniWrite(s.ConfBrowser, configFile, "Settings", "browser")
+    IniWrite(s.ConfInitials, configFile, "Settings", "initials")
+    IniWrite(s.ConfAppointmentBookStartDate, configFile, "Settings", "AppointmentBookStartDate")
+    IniWrite(s.ConfLegacySheet ? "true" : "false", configFile, "Settings", "LegacySheet")
+    IniWrite(s.ConfSudo ? "true" : "false", configFile, "Settings", "Sudo")
+
+    IniWrite(s.HotkeyEnterOutcome, configFile, "Hotkeys", "EnterOutcome")
+    IniWrite(s.HotkeyRevenueCycle, configFile, "Hotkeys", "RevenueCycle")
+    IniWrite(s.HotkeyPowerChart, configFile, "Hotkeys", "PowerChart")
+    IniWrite(s.HotkeyAppointmentBook, configFile, "Hotkeys", "AppointmentBook")
+    IniWrite(s.HotkeyPMOffice, configFile, "Hotkeys", "PMOffice")
+    IniWrite(s.HotkeyAddReferral, configFile, "Hotkeys", "AddReferral")
 
     ToolTip("Settings saved!")
     SetTimer(() => ToolTip(), -1000)
 }
 
 ResetHotkeys(*) {
-    IniDelete("config.ini", "Hotkeys")
-    Run("Master.ahk")
-    ToolTip("Hotkeys cleared! Click 'Save Settings' to apply.")
-    SetTimer(() => ToolTip(), -2000)
+    IniDelete(configFile, "Hotkeys")
+    Reload()
 }
 
-; ── Hotkey to show GUI ────────────────────────────────────────────
+;  Show GUI Hotkey
 NumpadEnter:: {
-    myGui.Show()
+    LeftGui.Show()
+    RightGui.Show()
 }
