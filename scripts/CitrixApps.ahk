@@ -109,7 +109,7 @@ PowerChart(*) {
 
 try Hotkey PMOfficeKey, PMOffice
 PMOffice(*) {
-    PMOfficeGUI := Gui("+AlwaysOnTop", "Add Referral Setup")
+    PMOfficeGUI := Gui("+AlwaysOnTop", "PM Office Options")
     PMOfficeGUI.SetFont("s10", "Segoe UI")
 
     PMOfficeGUI.Add("Text", , "Make sure clipboard is MRN!")
@@ -117,8 +117,11 @@ PMOffice(*) {
     okBtn := PMOfficeGUI.Add("Button", "Default vViewEncounter", "View Encounter")
     okBtn.OnEvent("Click", ViewEncounter.Bind(PMOfficeGUI))
 
-    okBtn := PMOfficeGUI.Add("Button", "Default vInpatientElectiveAdmission", "Inpatient Elective Admission")
+    okBtn := PMOfficeGUI.Add("Button", "Default vInpatientElectiveAdmission Disabled", "Inpatient Elective Admission [Soon]")
     okBtn.OnEvent("Click", InpatientElectiveAdmission.Bind(PMOfficeGUI))
+
+    okBtn := PMOfficeGUI.Add("Button", "Default vDischarge Disabled", "Discharge [Soon]")
+    okBtn.OnEvent("Click", Discharge.Bind(PMOfficeGUI))
 
     PMOfficeGUI.Show("AutoSize Center")
 }
@@ -153,6 +156,9 @@ InpatientElectiveAdmission(guiObj, *) {
     ; --- Execution ---
 }
 
+Discharge(guiObj, *) {
+}
+
 try Hotkey AppointmentBookKey, AppointmentBook
 AppointmentBook(*) {
     if !WindowCheck("Standard Patient") {
@@ -180,7 +186,6 @@ AppointmentBook(*) {
     Send(AppointmentBookStartDate)
     Send("{Enter}")
 }
-
 
 AutoLoop() {
     Sleep(100) ; Stops PU usage going crazy

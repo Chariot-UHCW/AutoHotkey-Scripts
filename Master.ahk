@@ -17,19 +17,18 @@ LeftGui.AddText("xm w600 0x10")
 scriptList := LeftGui.AddListBox("xm y+5 w600 h200 Multi")
 LoadScripts()
 
-LeftGui.AddButton("xm y+8 w180", "Open Script").OnEvent("Click", OpenScript)
-LeftGui.AddButton("x+10 yp w180", "Refresh Scripts").OnEvent("Click", LoadScripts)
-LeftGui.AddButton("x+10 yp w180", "Close All Scripts [Soon]").OnEvent("Click", CloseAllScripts)
+LeftGui.AddButton("xm y+8 w193", "Open Script").OnEvent("Click", OpenScript)
+LeftGui.AddButton("x+10 yp w193", "Refresh Scripts").OnEvent("Click", LoadScripts)
+LeftGui.AddButton("x+10 yp w193", "Close All Scripts [Soon]").OnEvent("Click", CloseAllScripts)
 
 LeftGui.AddText("xm y+20 w600 0x10")
 LeftGui.AddText("xm y+5 w600 Center", "Info")
 LeftGui.AddText("xm w600 0x10")
 
-LeftGui.AddGroupBox("r3 w600", "How to use:")
 LeftGui.AddText("xm y+5 w600", "How to Use:")
 LeftGui.AddText("xm y+5 w600", "- Configure your settings and bind your hotkeys on the right")
 LeftGui.AddText("xm y+5 w600", "- Click the script you would like to run and press 'Open Script'")
-LeftGui.AddText("xm y+5 w600", "Thats it, below is a description of the functions of each script.")
+LeftGui.AddText("xm y+5 w600", "Thats it, some scripts have set hotkeys and variables that need to be changed in the file, ive been busy working on the main CitrixApps.ahk script sorry")
 
 ; Right GUI: Config & Hotkeys
 RightGui := Gui()
@@ -46,8 +45,8 @@ RightGui.AddEdit("x+10 yp-3 w380 vConfBrowser")
 RightGui.AddText("xm y+10 w200", "Initials:")
 RightGui.AddEdit("x+10 yp-3 w380 vConfInitials")
 
-RightGui.AddText("xm y+10 w200", "Appt. Book Default Start Date:")
-RightGui.AddEdit("x+10 yp-3 w380 vConfAppointmentBookStartDate")
+RightGui.AddText("xm y+10 w200", "Appt. Book Default Start Date")
+RightGui.AddEdit("x+10 yp-3 w380 Number Limit8 vConfAppointmentBookStartDate")
 
 RightGui.AddCheckbox("xm y+10 w300 vConfLegacySheet", "Legacy Sheet (No Attendance ID Column)")
 RightGui.AddCheckbox("x+0 yp w300 vConfSudo", "Super User Apps")
@@ -57,11 +56,11 @@ RightGui.AddText("xm y+5 w600 Center", "Hotkeys")
 RightGui.AddText("xm w600 0x10")
 
 for entry in [
-    ["Enter Outcome: [WIP]", "vHotkeyEnterOutcome"],
+    ["Enter Outcome:", "vHotkeyEnterOutcome"],
     ["Revenue Cycle:", "vHotkeyRevenueCycle"],
     ["PowerChart:", "vHotkeyPowerChart"],
-    ["Appointment Book: [WIP]", "vHotkeyAppointmentBook"],
-    ["PM Office:", "vHotkeyPMOffice"],
+    ["Appointment Book:", "vHotkeyAppointmentBook"],
+    ["PM Office: [WIP]", "vHotkeyPMOffice"],
     ["Add Referral:", "vHotkeyAddReferral"]
 ] {
     RightGui.AddText("xm y+10 w200", entry[1])
