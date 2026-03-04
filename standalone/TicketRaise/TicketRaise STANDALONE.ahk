@@ -23,7 +23,7 @@ ToolTipTimer(message, time) { ; shorthand I made for displaying a tooltip with a
 }
 
 FindImage(imageName, clickCoordsX := 0, clickCoordsY := 0) { ; clickCoords are optional.
-    If ImageSearch(&x, &y, 0, 0, A_ScreenWidth, 1920, "TicketRaise_Equipment.pnmg") { ; searches the entire screen
+    If ImageSearch(&x, &y, 0, 0, A_ScreenWidth, 1920, "TicketRaise_Equipment.png") { ; searches the entire screen
         Click(x + clickCoordsX, y + clickCoordsY)  ; Click with specified offset if the image found
         return true
     }
