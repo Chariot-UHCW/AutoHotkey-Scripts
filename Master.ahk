@@ -2,6 +2,7 @@
 #SingleInstance Force
 
 global configFile := A_ScriptDir "\config.ini"
+global MasterGuiOpen := true ; opens on start so True
 
 colW := 640
 
@@ -169,6 +170,18 @@ ResetHotkeys(*) {
 
 ;  Show GUI Hotkey
 NumpadEnter:: {
-    LeftGui.Show()
-    RightGui.Show()
+
+    global MasterGuiOpen
+
+    if MasterGuiOpen {
+        WinClose(LeftGui)
+        WinClose(RightGui)
+        MasterGuiOpen := 0
+
+    }
+    else {
+        LeftGui.Show()
+        RightGui.Show()
+        MasterGuiOpen := 1
+    }
 }
