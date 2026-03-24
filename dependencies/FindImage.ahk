@@ -1,7 +1,7 @@
-FindImage(imageName, clickCoordsX := 0, clickCoordsY := 0) { ; clickCoords are optional.
+FindImage(imageName, clickCoordsX := 0, clickCoordsY := 0) {
     imagePath := A_ScriptDir "\..\images\" imageName ".png"
-    If ImageSearch(&x, &y, 0, 0, A_ScreenWidth, 1920, imagePath) { ; searches the entire screen
-        Click(x + clickCoordsX, y + clickCoordsY)  ; Click with specified offset if the image found
+    If ImageSearch(&x, &y, 0, 0, A_ScreenWidth, 1920, "*90 " imagePath) {
+        Click(x + clickCoordsX, y + clickCoordsY)
         return true
     }
     else {

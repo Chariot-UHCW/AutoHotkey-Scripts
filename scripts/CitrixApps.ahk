@@ -1,63 +1,61 @@
 #Requires AutoHotkey v2.0
 #Include ../ConfigLoader.ahk
 #Include ../dependencies/_all.ahk
-Critical ; allows queuing keys
-SetTimer(AutoLoop, 100) ; run loop at bottom every 100ms
+Critical ; Allows queuing keys
+SetTimer(AutoLoop, 100) ; normal loops hijack control
 
+; THIS FUNC IS THE STANDARD, WILL REFACTOR EVERYTHING ELSE SOON
 try Hotkey EnterOutcomeKey, EnterOutcome
 EnterOutcome(*) {
-    EnterOutcomeGUI := Gui("+AlwaysOnTop", "Add Referral Setup")
-    EnterOutcomeGUI.SetFont("s10", "Segoe UI")
-
-    EnterOutcomeGUI.Add("Text", , "Treatment Function: *")
-    EnterOutcomeGUI.Add("DropDownList", "w200 Choose1 vOutcome", [
+    EnterOutcomeGUI := BuildGui("Enter Outcome")
+    EnterOutcomeGUI.AddDropDownList("w200 Choose1 vOutcome", [
         "No Documentation",
-        "Already actioned",
-        "EPR Error",
+        "Already Actioned",
         "Checked Out",
-        "Other",
         "Cancelled",
         "No Show",
-        "Other",
-        "Workflow Error"
+        "Other Query",
+        "Workflow Error",
+        "EPR Error",
+        "DNA No Documentation",
+        "Checkout No Documentation",
+        "Rescheduled"
     ])
-
-    EnterOutcomeGUI.Add("Text", , "NOC:")
-    EnterOutcomeGUI.Add("Edit", "w200 vNOC Number")
-
-    EnterOutcomeGUI.Add("Text", "cRed", "* Required fields")
-
-    okBtn := EnterOutcomeGUI.Add("Button", "Default w80 vOkBtn", "OK")
-    okBtn.OnEvent("Click", RunOutcomeGui.Bind(EnterOutcomeGUI))
-
+    EnterOutcomeGUI.AddCheckBox("vDischarge", "Discharge?")
+    EnterOutcomeGUI.Add("Button", "Default w80", "OK").OnEvent("Click", EnterOutcomeExe)
     EnterOutcomeGUI.Show("AutoSize Center")
-}
-RunOutcomeGui(guiObj, *) {
-    fields := guiObj.Submit()
-    guiObj.Destroy()
-    ; --- Execution ---
-    if !windowCheck(browser) {
-        return
-    }
-    Sleep(500)
-    loop 5 {
+
+    EnterOutcomeExe(*) {
+        fields := EnterOutcomeGUI.Submit()
+        EnterOutcomeGUI.Destroy()
+
+        if !windowCheck(browser)
+            return
+
+        Sleep(500)
+        loop 4
+            Send("{Right}")
+
+        Send(fields.Outcome)
         Send("{Right}")
-    }
-    Send(fields.Outcome)
-    Send("{Right}")
-    Send(fields.NOC)
-    Send("{Right}")
-    Send(initials)
-    Send("{Right}")
-    Send(FormatTime(, "dd/MM/yyyy"))
-    Sleep(150)
-    Send("{Enter}")
-    Send("{Home}")
-    if !legacySheet {
+
+        if fields.Outcome != "No Documentation" { ; No NOC needed for no docs.
+            if fields.Discharge = 1
+                Send("1")
+            else
+                Send("3")
+        }
+
         Send("{Right}")
+        Send(initials)
+        Send("{Right}")
+        Send(FormatTime(, "dd/MM/yyyy"))
+        Sleep(100) ; Excel date picker does not go away if you move too soon, i hate it.
+        Send("{Tab}")
+        Send("{Home}")
+        if !legacySheet
+            Send("{Right}")
     }
-    Send("{Escape}")
-    Send("{Escape}")
 }
 
 try Hotkey RevenueCycleKey, RevenueCycle
@@ -94,10 +92,14 @@ PowerChart(*) {
     }
 
     Sleep(100)
-    if !FindImage("PowerChart/MRN-Search", "110", "10") { ; Clicks the search icon
-        ToolTipTimer("??? - No image found", 5)
-        return
-    }
+
+    ; keeps breaking, using click for now
+
+    ;if !FindImage("PowerChart/MRN-Search3", "110", "10") { ; Clicks the search icon
+    ;    ToolTipTimer("??? - No MRN-Search", 5)
+    ;    return
+    ;}
+    Click("1790, 88")
 
     Send("^v")
     Send("{Enter}")
@@ -211,7 +213,7 @@ PMOffice(*) {
 }
 
 AutoLoop() {
-    Sleep(100) ; Stops CPU usage going crazy
+    Sleep(50) ; Stops CPU usage going crazy
 
     try WinKill("Encounter Selection") ; Close PowerChart encounter selection after search
     try if WinExist("Assign") { ; Close 'Assign a relationship' after searching
