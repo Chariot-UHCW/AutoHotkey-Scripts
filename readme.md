@@ -8,8 +8,4 @@ Download these scripts with this:
 Be sure to run the following command daily to get the up-to-date:
 ```git pull```.
 
-Next steps:
-
-- add PMOffice options
-- clean up gui
-- add more customisation / features
+To start using the scripts run the "Master" file.
