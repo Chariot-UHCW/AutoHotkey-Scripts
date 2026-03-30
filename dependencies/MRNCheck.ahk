@@ -5,10 +5,12 @@
 
 MRNCheck() {
     if RegExMatch(A_Clipboard, "^(\d{9}|[A-Za-z]\d{5}|[A-Za-z]{2}\d{7})$") {
+        Log("Regex true", 2)
         return true
     }
     else {
-        MsgBox("Not A MRN: " . A_Clipboard)
+        ErrorMsg("Not A MRN: " . A_Clipboard)
+        Log("Regex false: " . A_Clipboard, 3)
         return false
     }
 }

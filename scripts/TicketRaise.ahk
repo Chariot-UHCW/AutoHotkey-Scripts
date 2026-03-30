@@ -7,6 +7,7 @@ location := "20026"
 contactNumberNotListed := "teams"
 
 PgUp:: {
+    Log("-- Ticket Raise GUI --", 1)
     TicketRaiseGUI := Gui("+AlwaysOnTop", "Merge Ticket Maker")
     TicketRaiseGUI.SetFont("s10", "Segoe UI")
     ;mrn
@@ -34,25 +35,26 @@ UpdateOkButton(guiObj) {
 }
 
 RunMacro(guiObj, *) {
+    Log("Running Ticket Raise", 2)
     fields := guiObj.Submit()
+    Log("Fields Submitted: MRN: " . fields.MRN . ", WaitlistFIN: " . fields.WaitlistFIN . ", EncounterFIN: " . fields.EncounterFIN)
 
     ; real execution
-    if !WindowCheck(browser) {
-        MsgBox("no")
+    if !WindowCheck(browser)
         return
-    }
 
     loop {
         if !FindImage("TicketRaise_Equipment", 10, 30) {
             Run ("https://uhcw.service-now.com/sp?id=sc_cat_item&sys_id=234c5ab11b30bd100068eb91b24bcb77")
             Sleep 1500  ; image search can skip over it or something?
+            Log("Didn't find equipment box, opening URL", 2)
         }
         else {
             break
         }
     }
 
-    ToolTipTimer("YES", 1)
+    Log("Found Equipment Box", 2)
     Send(equipmentNumber)
     Sleep(500)
     Send("{Tab}")
@@ -88,4 +90,6 @@ RunMacro(guiObj, *) {
     Send("DSG")
     Send("{Tab}")
     Send("Hello, please merge the waitlist: " . fields.WaitlistFIN . ". with the encounter FIN: " . fields.EncounterFIN . ". Thank you!")
+    Log("Everything sent.", 2)
+    Log("-- Ticket Raise GUI --", 4)
 }

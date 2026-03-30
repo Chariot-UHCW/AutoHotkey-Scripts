@@ -50,7 +50,8 @@ RightGui.AddEdit("x+10 yp-3 w380 Number Limit8 vConfAppointmentBookStartDate")
 
 RightGui.AddCheckbox("xm y+10 w300 vConfLegacySheet", "Legacy Sheet (No Attendance ID Column)")
 RightGui.AddCheckbox("x+0 yp w300 vConfSudo", "Super User Apps")
-RightGui.AddCheckbox("xm y+10 w300 vConfShowLogs", "Show Logs")
+RightGui.AddCheckbox("xm y+10 w300 vConfSaveLogs Checked", "Save Logs")
+RightGui.AddCheckbox("x+0 yp w300 vConfShowErrors Checked", "Show Errors")
 
 RightGui.AddText("xm y+20 w600 0x10")
 RightGui.AddText("xm y+5 w600 Center", "Hotkeys")
@@ -133,7 +134,8 @@ LoadCurrentSettings() {
         ConfAppointmentBookStartDate: IniRead(configFile, "Settings", "AppointmentBookStartDate", ""),
         ConfLegacySheet: IniRead(configFile, "Settings", "LegacySheet", "false") = "true" ? 1 : 0,
         ConfSudo: IniRead(configFile, "Settings", "Sudo", "false") = "true" ? 1 : 0,
-        ConfShowLogs: IniRead(configFile, "Settings", "ShowLogs", "false") = "true" ? 1 : 0,
+        ConfSaveLogs: IniRead(configFile, "Settings", "SaveLogs", "true") = "false" ? 0 : 1,
+        ConfShowErrors: IniRead(configFile, "Settings", "ShowErrors", "true") = "false" ? 0 : 1,
         HotkeyEnterOutcome: IniRead(configFile, "Hotkeys", "EnterOutcome", ""),
         HotkeyRevenueCycle: IniRead(configFile, "Hotkeys", "RevenueCycle", ""),
         HotkeyPowerChart: IniRead(configFile, "Hotkeys", "PowerChart", ""),
@@ -151,9 +153,10 @@ SaveSettings(*) {
     IniWrite(s.ConfBrowser, configFile, "Settings", "browser")
     IniWrite(s.ConfInitials, configFile, "Settings", "initials")
     IniWrite(s.ConfAppointmentBookStartDate, configFile, "Settings", "AppointmentBookStartDate")
-    IniWrite(s.ConfLegacySheet ? "true" : "false", configFile, "Settings", "LegacySheet")
+    IniWrite(s.ConfLegacySheet ? "true" : "false", configFile, "Settings", "LegacySheet") ; might not be needed anymore due to excel integration. still in testing
     IniWrite(s.ConfSudo ? "true" : "false", configFile, "Settings", "Sudo")
-    IniWrite(s.ConfShowLogs ? "true" : "false", configFile, "Settings", "ShowLogs")
+    IniWrite(s.ConfSaveLogs ? "true" : "false", configFile, "Settings", "SaveLogs")
+    IniWrite(s.ConfShowErrors ? "true" : "false", configFile, "Settings", "ShowErrors")
 
     IniWrite(s.HotkeyEnterOutcome, configFile, "Hotkeys", "EnterOutcome")
     IniWrite(s.HotkeyRevenueCycle, configFile, "Hotkeys", "RevenueCycle")

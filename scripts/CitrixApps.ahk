@@ -2,11 +2,11 @@
 #Include ../ConfigLoader.ahk
 #Include ../dependencies/_all.ahk
 Critical ; Allows queuing keys
-SetTimer(AutoLoop, 100) ; normal loops hijack control
+SetTimer(AutoLoop, 50) ; normal loops hijack control
 
-; THIS FUNC IS THE STANDARD, WILL REFACTOR EVERYTHING ELSE SOON
 try Hotkey EnterOutcomeKey, EnterOutcome
 EnterOutcome(*) {
+    Log("-- Enter Outcome GUI --", 1)
     EnterOutcomeGUI := BuildGui("Enter Outcome")
     EnterOutcomeGUI.AddDropDownList("w200 Choose1 vOutcome", [
         "No Documentation",
@@ -22,52 +22,48 @@ EnterOutcome(*) {
         "Rescheduled"
     ])
     EnterOutcomeGUI.AddCheckBox("vDischarge", "Discharge?")
-    EnterOutcomeGUI.Add("Button", "Default w80", "OK").OnEvent("Click", EnterOutcomeExe)
+    EnterOutcomeGUI.AddButton("Default w80", "OK").OnEvent("Click", EnterOutcomeExe)
     EnterOutcomeGUI.Show("AutoSize Center")
 
+    ; REWRITE THIS FOR EXCEL APP!
     EnterOutcomeExe(*) {
+        Log("Running Outcome", 2)
         fields := EnterOutcomeGUI.Submit()
+        Log("Outcome: " . fields.Outcome)
+        Log("Discharge: " . fields.Discharge)
         EnterOutcomeGUI.Destroy()
-
-        if !windowCheck(browser)
+        if !WindowCheck("Excel") or !MRNCheck()
             return
 
-        Sleep(500)
-        loop 4
-            Send("{Right}")
+        xl := ComObjActive("Excel.Application")
 
-        Send(fields.Outcome)
-        Send("{Right}")
+        ; here i would compare the clipboard and goto that cell, but excel app makes the clipboard go kaboom after every action :/
+        MRNrow := xl.ActiveCell.Row
 
-        if fields.Outcome != "No Documentation" { ; No NOC needed for no docs.
+        xl.Cells(MRNrow, 6).Value := fields.Outcome   ; Comments [F]
+        xl.Cells(MRNrow, 8).Value := initials   ; Initials [H]
+        xl.Cells(MRNrow, 9).Value := FormatTime(, "dd/MM/yyyy")   ; Date reviewed DSG [I]
+
+        if fields.Outcome != "No Documentation" { ; NOC [G]
             if fields.Discharge = 1
-                Send("1")
+                xl.Cells(MRNrow, 7).Value := "1"
             else
-                Send("3")
+                xl.Cells(MRNrow, 7).Value := "3"
         }
 
-        Send("{Right}")
-        Send(initials)
-        Send("{Right}")
-        Send(FormatTime(, "dd/MM/yyyy"))
-        Sleep(100) ; Excel date picker does not go away if you move too soon, i hate it.
-        Send("{Tab}")
-        Send("{Home}")
-        if !legacySheet
-            Send("{Right}")
+        xl.Cells(MRNrow + 1, 2).Select  ; Goes one down from B
+
+        Log("-- Enter Outcome GUI --", 4)
     }
 }
 
 try Hotkey RevenueCycleKey, RevenueCycle
 RevenueCycle(*) {
-    if !windowCheck("Revenue Cycle") { ; calls dependencies/WindowCheck.ahk
+    Log("-- Revenue Cycle --", 1)
+    if !WindowCheck("Revenue Cycle") or !MRNCheck()
         return
-    }
-    if !MRNCheck() {
-        return
-    }
 
-    Click(31, 57)
+    Click(31, 57) ; Search bar, very very consistent
     Send("^v")
     Sleep(200)
     Send("{Enter}")
@@ -79,33 +75,20 @@ RevenueCycle(*) {
         WinClose("External MPI Retrieve")
         ToolTipTimer("Closed", 1)
     }
+
+    Log("-- Revenue Cycle --", 4)
 }
 
 try Hotkey PowerChartKey, PowerChart
 PowerChart(*) {
-    ToolTipTimer("Powerchart", 1)
-    if !windowCheck("PowerChart") {
+    Log("-- PowerChart --", 1)
+    if !windowCheck("PowerChart") or !MRNCheck() or !FindImage("PowerChart/MRN-Search", "10", "10")
         return
-    }
-    if !MRNCheck() {
-        return
-    }
-
-    Sleep(100)
-
-    ; keeps breaking, using click for now
-
-    ;if !FindImage("PowerChart/MRN-Search3", "110", "10") { ; Clicks the search icon
-    ;    ToolTipTimer("??? - No MRN-Search", 5)
-    ;    return
-    ;}
-    Click("1790, 88")
 
     Send("^v")
     Send("{Enter}")
     Sleep(50)
     Send("{Enter}")
-
     if Sudo {
         WinWait("ACCESSIBLE INFO")
         if !FindImage("PowerChart/Dismiss", "10", "10") {
@@ -113,41 +96,29 @@ PowerChart(*) {
             return
         }
     }
-
-
-    Sleep(200)
-    Send("{Enter}")
+    Log("-- PowerChart --", 4)
 }
 
 try Hotkey AppointmentBookKey, AppointmentBook
 AppointmentBook(*) {
-    if !WindowCheck("Standard Patient") {
+    Log("-- Appointment Book --", 1)
+    if !WindowCheck("Standard Patient") or !MRNCheck() or !FindImage("AppointmentBook/Ellipsis", 10, 10)
         return
-    }
-    if !MRNCheck() {
-        return
-    }
-
-    Sleep(50)
-
-    if !FindImage("AppointmentBook/Ellipsis", 10, 10) {
-        return
-    }
-
-    Sleep(800)
 
     if !FindImage("AppointmentBook/Reset", 10, 10) {
+        Log("Could not find reset button", 3) ; put this into findimage once re-writeen
         return
     }
 
     Send("^v")
     Send("{Enter}")
-    Sleep(100)
+    Sleep(1000)
     Send("{Enter}")
 
-    Sleep(100)
+    Sleep(1000)
     Send(AppointmentBookStartDate)
     Send("{Enter}")
+    Log("-- Appointment Book --", 4)
 }
 
 try Hotkey PMOfficeKey, PMOffice
@@ -213,15 +184,18 @@ PMOffice(*) {
 }
 
 AutoLoop() {
-    Sleep(50) ; Stops CPU usage going crazy
-
-    try WinKill("Encounter Selection") ; Close PowerChart encounter selection after search
+    try if WinKill("Encounter Selection") {
+        Log("Killed Encounter Selection")
+    }
     try if WinExist("Assign") { ; Close 'Assign a relationship' after searching
         WinActivate("Assign")
         Send("{Enter}")
+        Sleep(500)
+        Log("Sent enter to close Assign window")
     }
     try if WinExist("Admit Patient") { ; 'TCI date not today' thing
         WinActivate("Admit Patient")
         Send("{Enter}")
+        Log("Sent enter to close 'TCI date not today' window")
     }
 }
