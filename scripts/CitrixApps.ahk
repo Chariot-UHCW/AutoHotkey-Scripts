@@ -89,6 +89,7 @@ PowerChart(*) {
     Send("{Enter}")
     Sleep(50)
     Send("{Enter}")
+
     if Sudo {
         WinWait("ACCESSIBLE INFO")
         if !FindImage("PowerChart/Dismiss", "10", "10") {
