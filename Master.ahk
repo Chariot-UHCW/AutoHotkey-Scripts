@@ -63,7 +63,8 @@ for entry in [
     ["PowerChart:", "vHotkeyPowerChart"],
     ["Appointment Book:", "vHotkeyAppointmentBook"],
     ["PM Office: [WIP]", "vHotkeyPMOffice"],
-    ["Add Referral:", "vHotkeyAddReferral"]
+    ["Add Referral:", "vHotkeyAddReferral"],
+    ["Pre-Op Options:", "vHotkeyPreOpGui"]
 ] {
     RightGui.AddText("xm y+10 w200", entry[1])
     RightGui.AddHotkey("x+10 yp-3 w380 " entry[2])
@@ -141,7 +142,8 @@ LoadCurrentSettings() {
         HotkeyPowerChart: IniRead(configFile, "Hotkeys", "PowerChart", ""),
         HotkeyAppointmentBook: IniRead(configFile, "Hotkeys", "AppointmentBook", ""),
         HotkeyPMOffice: IniRead(configFile, "Hotkeys", "PMOffice", ""),
-        HotkeyAddReferral: IniRead(configFile, "Hotkeys", "AddReferral", "")
+        HotkeyAddReferral: IniRead(configFile, "Hotkeys", "AddReferral", ""),
+        HotkeyPreOpGui: IniRead(configFile, "Hotkeys", "PreOpGui", "")
     }
     for key, val in saved.OwnProps()
         RightGui[key].Value := val
@@ -164,6 +166,7 @@ SaveSettings(*) {
     IniWrite(s.HotkeyAppointmentBook, configFile, "Hotkeys", "AppointmentBook")
     IniWrite(s.HotkeyPMOffice, configFile, "Hotkeys", "PMOffice")
     IniWrite(s.HotkeyAddReferral, configFile, "Hotkeys", "AddReferral")
+    IniWrite(s.HotkeyPreOpGui, configFile, "Hotkeys", "PreOpGui")
 
     ToolTip("Settings saved!")
     SetTimer(() => ToolTip(), -1000)
