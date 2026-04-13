@@ -19,5 +19,3 @@ global AppointmentBookKey := IniRead(configFile, "Hotkeys", "AppointmentBook", "
 global PMOfficeKey := IniRead(configFile, "Hotkeys", "PMOffice", "")
 global AddReferralKey := IniRead(configFile, "Hotkeys", "AddReferral", "")
 global PreOpGUIKey := IniRead(configFile, "Hotkeys", "PreOpGui", "")
-
-ToolTipTimer("Config Loaded", 1)

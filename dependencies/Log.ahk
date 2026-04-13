@@ -2,17 +2,26 @@ Log(message, status := 0) {
     if !SaveLogs
         return
 
-    LogFile := A_ScriptDir "\..\logs\" FormatTime(A_Now, "yyyy-MM-dd") ".txt"
+    ; Allows Root files and script files to log to the correct location
 
-    if status = 1
+    if DirExist(A_ScriptDir "\..\logs")
+        LogFile := A_ScriptDir "\..\logs\" FormatTime(A_Now, "yyyy-MM-dd") ".txt"
+    else if DirExist(A_ScriptDir "\logs")
+        LogFile := A_ScriptDir "\logs\" FormatTime(A_Now, "yyyy-MM-dd") ".txt"
+    else {
+        ErrorMsg("No Log folder found!")
+        return
+    }
+
+    if status = 1 ; START
         statusText := "⏳"
-    else if status = 2
+    else if status = 2 ; LOG
         statusText := "📝"
-    else if status = 3
+    else if status = 3 ; STOP/ERROR
         statusText := "🚫"
-    else if status = 4
+    else if status = 4 ; COMPLETE
         statusText := "✅"
-    else
+    else ; INFORMATION
         statusText := "❕"
 
     logLine := "[" . FormatTime(A_Now, "HH:mm:ss") "." A_MSec "] " statusText . " " . message . "`n"
@@ -40,7 +49,9 @@ Log(message, status := 0) {
     }
 }
 
-; status: ⏳start, 📝process/normal/continue, 🚫error/stop, ✅done/success,
+MRNLog() {
+    ; will copy all clipboard text to a file.
+}
 
 ErrorMsg(message) {
     if !ShowErrors

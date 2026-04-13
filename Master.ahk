@@ -87,11 +87,11 @@ OnMessage(0x0003, WM_MOVE)
 WM_MOVE(wParam, lParam, msg, hwnd) {
     if (hwnd = LeftGui.Hwnd) {
         WinGetPos(&lx, &ly, &lw, , LeftGui.Hwnd)
-        RightGui.Show("x" (lx + lw) " y" ly)
+        WinMove(lx + lw, ly, , , RightGui.Hwnd) ; Much smoother than .Show()
     } else if (hwnd = RightGui.Hwnd) {
         WinGetPos(&rx, &ry, , , RightGui.Hwnd)
         WinGetPos(, , &lw, , LeftGui.Hwnd)
-        LeftGui.Show("x" (rx - lw) " y" ry)
+        WinMove(rx - lw, ry, , , LeftGui.Hwnd)
     }
 }
 
@@ -128,48 +128,20 @@ CloseAllScripts(*) {
 
 ; Settings Functions
 
+global hotkeyList := ["EnterOutcome", "RevenueCycle", "PowerChart", "AppointmentBook", "PMOffice", "AddReferral", "PreOpGui"]
+
 LoadCurrentSettings() {
-    saved := {
-        ConfBrowser: IniRead(configFile, "Settings", "browser", ""),
-        ConfInitials: IniRead(configFile, "Settings", "initials", ""),
-        ConfAppointmentBookStartDate: IniRead(configFile, "Settings", "AppointmentBookStartDate", ""),
-        ConfLegacySheet: IniRead(configFile, "Settings", "LegacySheet", "false") = "true" ? 1 : 0,
-        ConfSudo: IniRead(configFile, "Settings", "Sudo", "false") = "true" ? 1 : 0,
-        ConfSaveLogs: IniRead(configFile, "Settings", "SaveLogs", "true") = "false" ? 0 : 1,
-        ConfShowErrors: IniRead(configFile, "Settings", "ShowErrors", "true") = "false" ? 0 : 1,
-        HotkeyEnterOutcome: IniRead(configFile, "Hotkeys", "EnterOutcome", ""),
-        HotkeyRevenueCycle: IniRead(configFile, "Hotkeys", "RevenueCycle", ""),
-        HotkeyPowerChart: IniRead(configFile, "Hotkeys", "PowerChart", ""),
-        HotkeyAppointmentBook: IniRead(configFile, "Hotkeys", "AppointmentBook", ""),
-        HotkeyPMOffice: IniRead(configFile, "Hotkeys", "PMOffice", ""),
-        HotkeyAddReferral: IniRead(configFile, "Hotkeys", "AddReferral", ""),
-        HotkeyPreOpGui: IniRead(configFile, "Hotkeys", "PreOpGui", "")
+    for key in hotkeyList {
+        RightGui["vHotkey" key].Value := IniRead(configFile, "Hotkeys", key, "")
     }
-    for key, val in saved.OwnProps()
-        RightGui[key].Value := val
 }
 
 SaveSettings(*) {
     s := RightGui.Submit(false)
 
-    IniWrite(s.ConfBrowser, configFile, "Settings", "browser")
-    IniWrite(s.ConfInitials, configFile, "Settings", "initials")
-    IniWrite(s.ConfAppointmentBookStartDate, configFile, "Settings", "AppointmentBookStartDate")
-    IniWrite(s.ConfLegacySheet ? "true" : "false", configFile, "Settings", "LegacySheet") ; might not be needed anymore due to excel integration. still in testing
-    IniWrite(s.ConfSudo ? "true" : "false", configFile, "Settings", "Sudo")
-    IniWrite(s.ConfSaveLogs ? "true" : "false", configFile, "Settings", "SaveLogs")
-    IniWrite(s.ConfShowErrors ? "true" : "false", configFile, "Settings", "ShowErrors")
-
-    IniWrite(s.HotkeyEnterOutcome, configFile, "Hotkeys", "EnterOutcome")
-    IniWrite(s.HotkeyRevenueCycle, configFile, "Hotkeys", "RevenueCycle")
-    IniWrite(s.HotkeyPowerChart, configFile, "Hotkeys", "PowerChart")
-    IniWrite(s.HotkeyAppointmentBook, configFile, "Hotkeys", "AppointmentBook")
-    IniWrite(s.HotkeyPMOffice, configFile, "Hotkeys", "PMOffice")
-    IniWrite(s.HotkeyAddReferral, configFile, "Hotkeys", "AddReferral")
-    IniWrite(s.HotkeyPreOpGui, configFile, "Hotkeys", "PreOpGui")
-
-    ToolTip("Settings saved!")
-    SetTimer(() => ToolTip(), -1000)
+    for key in hotkeyList {
+        IniWrite(s.("Hotkey" key), configFile, "Hotkeys", key)
+    }
 }
 
 ResetHotkeys(*) {
@@ -183,8 +155,8 @@ NumpadEnter:: {
     global MasterGuiOpen
 
     if MasterGuiOpen {
-        WinClose(LeftGui)
-        WinClose(RightGui)
+        LeftGui.Hide()
+        RightGui.Hide()
         MasterGuiOpen := 0
     }
     else {
