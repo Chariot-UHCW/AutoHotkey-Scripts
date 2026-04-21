@@ -11,7 +11,7 @@ ConfigIniPath := A_ScriptDir "\config.ini"
 
 MasterGui := BuildGui("Master")
 
-ScriptList := MasterGui.AddListView("Checked r10 w700", ["Name", "Description"])
+ScriptList := MasterGui.AddListView("r10 w700", ["Name", "Description"])
 Loop Files, ScriptsDir "\*.ahk"
 {
     FileDesc := IniRead(DescriptionsIniPath, "Descriptions", A_LoopFileName, "")
@@ -21,9 +21,10 @@ Loop Files, ScriptsDir "\*.ahk"
 ScriptList.OnEvent("DoubleClick", RunFile) ; maybe make it open when checked
 ScriptList.ModifyCol(1, "Auto") ; Auto-size
 
-MasterGui.AddButton("", "Open Selected")
-MasterGui.AddButton("x+10", "Refresh all scripts")
-MasterGui.AddButton("x+10", "Close all scripts").OnEvent("Click", (*) => CloseScripts())
+; These dont do nish rn
+; MasterGui.AddButton("", "Open Selected")
+; MasterGui.AddButton("x+10", "Refresh all scripts")
+; MasterGui.AddButton("x+10", "Close all scripts").OnEvent("Click", (*) => CloseScripts())
 MasterGui.AddButton("xm", "Open Config").OnEvent("Click", (*) => ShowConfig())
 
 MasterGui.Show("AutoSize Center")
@@ -154,21 +155,6 @@ ResetConfig(GuiObj) {
     }
 }
 
-CloseScripts() {
-
-}
-
-MasterGuiOpen := 1
 NumpadEnter:: {
-
-    global MasterGuiOpen
-
-    if MasterGuiOpen {
-        MasterGui.Hide()
-        MasterGuiOpen := 0
-    }
-    else {
-        MasterGui.Show()
-        MasterGuiOpen := 1
-    }
+    MasterGui.Show()
 }
