@@ -5,7 +5,6 @@ Download AHK here:
 Download these scripts with this:
 ```git clone https://github.com/josh-white-uhcw/uhcw-ahk.git```.
 
-Be sure to run the following command daily to get the up-to-date:
-```git pull```.
+Updates should now be automatically prompted on you once opening the master file, follow the instructions to install as you could miss out on new features/fixes.
 
 To start using the scripts run the "Master" file.
