@@ -10,12 +10,12 @@ PreOpGUI(*) {
     btn1.OnEvent("Click", (*) => (PreOpGUI.Destroy(), ShowApptCommentGUI()))
 
     btn2 := PreOpGUI.AddButton("w160", "Text Message")
-    btn2.OnEvent("Click", (*) => (PreOpGUI.Destroy(), ShowTxtMsgGUI()))
+    btn2.OnEvent("Click", (*) => (PreOpGUI.Destroy(), TxtMsgGUI()))
 
     PreOpGUI.Show("AutoSize Center")
 }
 
-ShowTxtMsgGUI() {
+TxtMsgGUI() {
     Log("Text Message GUI", 1)
     g := BuildGui("Text Message")
 

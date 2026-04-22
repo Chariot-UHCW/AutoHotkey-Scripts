@@ -1,6 +1,5 @@
-1.0.0 -- THE FIRST --
+1.1.0 -- Text message sending test --
 
-Added auto updating, which hopefully works without issue.
-Cleaned up codebase and removed redundant files.
-
-Great things to come soon.
+Added a script to pre-fill text messages with some templates which i can add onto later.
+I should really put the two pre-op scripts in one, but the code is too messy to do that right now.
+Fix for this issue coming really soon.
