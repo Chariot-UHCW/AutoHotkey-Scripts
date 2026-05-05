@@ -1,10 +1,12 @@
 ; combinations:
 ; [A-Za-z]\d{5} == 1 letter 5 num
 ; [A-Za-z]{2}\d{7} == 2 letter 7 num
-; \d{8} == 9 num
+; \d{9} == 9 num
+; (spaces ignored)
 
 MRNCheck() {
-    if RegExMatch(A_Clipboard, "^(\d{9}|[A-Za-z]\d{5}|[A-Za-z]{2}\d{7})$") {
+    ClipboardNoSpaces := RegExReplace(A_Clipboard, "\s", "") ; strips spaces, because copying will sometimes include them
+    if RegExMatch(ClipboardNoSpaces, "^(\d{9}|[A-Za-z]\d{5}|[A-Za-z]{2}\d{7})$") {
         Log("Regex true", 2)
         return true
     }

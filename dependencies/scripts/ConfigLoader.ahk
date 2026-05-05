@@ -3,10 +3,9 @@
 
 configFile := A_ScriptDir "\..\config.ini"
 
-global OpenMasterGuiKey := IniRead(configFile, "General", "OpenMasterGui", "")
-
 global browser := IniRead(configFile, "General", "Browser", "")
-global initials := IniRead(configFile, "General", "Initials", "")
+global fullName := IniRead(configFile, "General", "FullName", "")
+global initials := fullName ? RegExReplace(fullName, "\b(\w)\w*\b|\W+", "$1") : "" ; regex grabs first letter of each word, but keeps all when hyphened. for example "Alice B. Coombes" becomes "ABC"
 global legacySheet := (IniRead(configFile, "General", "LegacySheet", "0") = "1")
 global Sudo := (IniRead(configFile, "General", "Sudo", "0") = "1")
 global SaveLogs := (IniRead(configFile, "General", "SaveLogs", "1") = "1")

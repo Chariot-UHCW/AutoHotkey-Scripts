@@ -13,11 +13,11 @@ ConfigIniPath := A_ScriptDir "\config.ini"
 
 MasterGui := BuildGui("Master")
 
-ScriptList := MasterGui.AddListView("r10 w700", ["Name", "AI%","Description"])
+ScriptList := MasterGui.AddListView("r10 w700", ["Name", "Last Updated", "Description"])
 Loop Files, ScriptsDir "\*.ahk"
 {
     FileDesc := IniRead(ScriptInfoPath, "Descriptions", A_LoopFileName, "")
-    FileAi := IniRead(ScriptInfoPath, "AIPercent", A_LoopFileName, "")
+    FileAi := IniRead(ScriptInfoPath, "LastUpdated", A_LoopFileName, "")
     ScriptList.Add(, A_LoopFileName, FileAi, FileDesc)
 }
 
@@ -55,8 +55,8 @@ ShowConfig() {
     ConfigGui.AddText("xm y+10 w200", "Browser Name:")
     ConfigGui.AddEdit("x+10 yp-3 w380 vConfBrowser")
 
-    ConfigGui.AddText("xm y+10 w200", "Initials:")
-    ConfigGui.AddEdit("x+10 yp-3 w380 vConfInitials")
+    ConfigGui.AddText("xm y+10 w200", "Full Name:")
+    ConfigGui.AddEdit("x+10 yp-3 w380 vConfFullName")
 
     ConfigGui.AddText("xm y+10 w200", "Appt. Book Default Start Date")
     ConfigGui.AddEdit("x+10 yp-3 w380 Number Limit8 vConfAppointmentBookStartDate")
@@ -66,6 +66,7 @@ ShowConfig() {
     ConfigGui.AddCheckbox("xm y+10 w300 vConfSaveLogs Checked", "Save Logs")
     ConfigGui.AddCheckbox("x+0 yp w300 vConfShowErrors Checked", "Show Errors")
     ConfigGui.AddCheckbox("xm y+10 w300 vConfFancyEffects Checked", "Fancy Effects")
+    ConfigGui.AddCheckbox("x+0 yp w300 vConfCheckForUpdates Checked", "Check For Updates")
 
     ConfigGui.AddText("xm y+20 w600 0x10")
     ConfigGui.AddText("xm y+5 w600 Center", "Hotkeys")
@@ -87,13 +88,15 @@ ShowConfig() {
 
     ; Load current settings
     ConfigGui["ConfBrowser"].Value := IniRead(ConfigIniPath, "General", "Browser", "")
-    ConfigGui["ConfInitials"].Value := IniRead(ConfigIniPath, "General", "Initials", "")
+    ConfigGui["ConfFullName"].Value := IniRead(ConfigIniPath, "General", "FullName", "")
     ConfigGui["ConfAppointmentBookStartDate"].Value := IniRead(ConfigIniPath, "General", "AppointmentBookStartDate", "")
     ConfigGui["ConfLegacySheet"].Value := IniRead(ConfigIniPath, "General", "LegacySheet", 0)
     ConfigGui["ConfSudo"].Value := IniRead(ConfigIniPath, "General", "Sudo", 0)
     ConfigGui["ConfSaveLogs"].Value := IniRead(ConfigIniPath, "General", "SaveLogs", 1)
     ConfigGui["ConfShowErrors"].Value := IniRead(ConfigIniPath, "General", "ShowErrors", 1)
     ConfigGui["ConfFancyEffects"].Value := IniRead(ConfigIniPath, "General", "FancyEffects", 1)
+    ConfigGui["ConfCheckForUpdates"].Value := IniRead(ConfigIniPath, "General", "CheckForUpdates", 1)
+
 
     for entry in [
         ["HotkeyEnterOutcome"],
@@ -118,13 +121,14 @@ ShowConfig() {
 
 SaveConfig(GuiObj) {
     IniWrite(GuiObj["ConfBrowser"].Value, ConfigIniPath, "General", "Browser")
-    IniWrite(GuiObj["ConfInitials"].Value, ConfigIniPath, "General", "Initials")
+    IniWrite(GuiObj["ConfFullName"].Value, ConfigIniPath, "General", "FullName")
     IniWrite(GuiObj["ConfAppointmentBookStartDate"].Value, ConfigIniPath, "General", "AppointmentBookStartDate")
     IniWrite(GuiObj["ConfLegacySheet"].Value, ConfigIniPath, "General", "LegacySheet")
     IniWrite(GuiObj["ConfSudo"].Value, ConfigIniPath, "General", "Sudo")
     IniWrite(GuiObj["ConfSaveLogs"].Value, ConfigIniPath, "General", "SaveLogs")
     IniWrite(GuiObj["ConfShowErrors"].Value, ConfigIniPath, "General", "ShowErrors")
     IniWrite(GuiObj["ConfFancyEffects"].Value, ConfigIniPath, "General", "FancyEffects")
+    IniWrite(GuiObj["ConfCheckForUpdates"].Value, ConfigIniPath, "General", "CheckForUpdates")
     for entry in [
         ["HotkeyEnterOutcome"],
         ["HotkeyRevenueCycle"],
@@ -143,13 +147,15 @@ SaveConfig(GuiObj) {
 ResetConfig(GuiObj) {
     ; Reset to defaults (adjust as needed)
     GuiObj["ConfBrowser"].Value := ""
-    GuiObj["ConfInitials"].Value := ""
+    GuiObj["ConfFullName"].Value := ""
     GuiObj["ConfAppointmentBookStartDate"].Value := ""
     GuiObj["ConfLegacySheet"].Value := 0
     GuiObj["ConfSudo"].Value := 0
     GuiObj["ConfSaveLogs"].Value := 1
     GuiObj["ConfShowErrors"].Value := 1
     GuiObj["ConfFancyEffects"].Value := 1
+    GuiObj["ConfCheckForUpdates"].Value := 1
+
     for entry in [
         ["HotkeyEnterOutcome"],
         ["HotkeyRevenueCycle"],

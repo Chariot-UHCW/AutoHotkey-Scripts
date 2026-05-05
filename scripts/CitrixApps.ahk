@@ -68,7 +68,7 @@ RevenueCycle(*) {
     Send("^v")
     Sleep(200)
     Send("{Enter}")
-    Sleep(500)
+    Sleep(500) ; 500 isnt long enough on the first search, but is past that
     Send("{Enter}")
 
     if Sudo {
@@ -98,6 +98,7 @@ PowerChart(*) {
             return
         }
     }
+
     Log("-- PowerChart --", 4)
 }
 
@@ -127,7 +128,7 @@ try Hotkey PMOfficeKey, PMOffice
 PMOffice(*) {
     PMOfficeGUI := BuildGui("PM Office Options")
 
-    PMOfficeGUI.AddText( , "Make sure clipboard is MRN!")
+    PMOfficeGUI.AddText(, "Make sure clipboard is MRN!")
 
     okBtn := PMOfficeGUI.AddButton("w300 Default", "View Encounter")
     okBtn.OnEvent("Click", RunConversation.Bind("ViewEncounter"))

@@ -1,3 +1,11 @@
+1.1.4 -- Small fixes
+
+- Renamed "MasterV2" to just "Master"
+- "Initials" now replaced with full name field, and initials are calculated automatically based on the name.
+- Fixed "Not a MRN:" message when the MRN incldes spaces, searching now works with any amount of spaces included with the MRN.
+- New options on Pre-Op Messages.
+^ Currently I reorder the default values to whatever I most use in the moment, but ill add a way to set defaults later.
+
 1.1.3 -- shorthand translator test --
 
 - Started adding custom icons, so not all scripts will be a green square now. just need to find a good set of icons to use first.
