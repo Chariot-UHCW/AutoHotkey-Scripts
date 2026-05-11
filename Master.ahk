@@ -13,7 +13,7 @@ ConfigIniPath := A_ScriptDir "\config.ini"
 
 MasterGui := BuildGui("Master")
 
-ScriptList := MasterGui.AddListView("r10 w700", ["FileName", "Name", "Last Updated", "Description"])
+ScriptList := MasterGui.AddListView("r10 w700", ["FileName", "Name", "Update Status", "Description"])
 Loop Files, ScriptsDir "\*.ahk"
 {
     CustomName := IniRead(ScriptInfoPath, "Names", A_LoopFileName, A_LoopFileName)
@@ -22,8 +22,10 @@ Loop Files, ScriptsDir "\*.ahk"
     ScriptList.Add(, A_LoopFileName, CustomName, FileAi, FileDesc)
 }
 
+ScriptList.ModifyCol(1, 0)
+
 ScriptList.OnEvent("DoubleClick", RunFile) ; maybe make it open when checked
-ScriptList.ModifyCol(1, "Auto") ; Auto-size
+ScriptList.ModifyCol(2, "Auto") ; Auto-size
 
 ; These dont do nish rn
 ; MasterGui.AddButton("", "Open Selected")
@@ -81,8 +83,9 @@ ShowConfig() {
         ["Appointment Book:", "vHotkeyAppointmentBook"],
         ["PM Office: [WIP]", "vHotkeyPMOffice"],
         ["Add Referral:", "vHotkeyAddReferral"],
-        ["Pre-Op Options:", "vHotkeyPreOpGui"],
-        ["Shorthand Translator:", "vHotkeyShorthandTranslator"]
+        ["Pre-Op Comments:", "vHotkeyPreOpGui"],
+        ["Pre-Op Message Centre Replies", "vHotkeyMessageCentreReplies"],
+        ["Shorthand Translator:", "vHotkeyShorthandTranslator"],
     ] {
         ConfigGui.AddText("xm y+10 w200", entry[1])
         ConfigGui.AddHotkey("x+10 yp-3 w380 " entry[2])
@@ -108,6 +111,7 @@ ShowConfig() {
         ["HotkeyPMOffice"],
         ["HotkeyAddReferral"],
         ["HotkeyPreOpGui"],
+        ["HotkeyMessageCentreReplies"],
         ["HotkeyShorthandTranslator"]
     ] {
         ConfigGui[entry[1]].Value := IniRead(ConfigIniPath, "Hotkeys", entry[1], "")
@@ -139,6 +143,7 @@ SaveConfig(GuiObj) {
         ["HotkeyPMOffice"],
         ["HotkeyAddReferral"],
         ["HotkeyPreOpGui"],
+        ["HotkeyMessageCentreReplies"],
         ["HotkeyShorthandTranslator"]
     ] {
         IniWrite(GuiObj[entry[1]].Value, ConfigIniPath, "Hotkeys", entry[1])
@@ -166,6 +171,7 @@ ResetConfig(GuiObj) {
         ["HotkeyPMOffice"],
         ["HotkeyAddReferral"],
         ["HotkeyPreOpGui"],
+        ["HotkeyMessageCentreReplies"],
         ["HotkeyShorthandTranslator"]
     ] {
         GuiObj[entry[1]].Value := ""
