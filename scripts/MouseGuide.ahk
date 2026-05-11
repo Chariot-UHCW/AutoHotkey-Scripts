@@ -2,8 +2,8 @@
 
 ; --- Configuration ---
 ImagePath := "../images/MouseGuide/MouseGuideRed.png"
-MaxW := 32
-MaxH := 32
+MaxW := 24
+MaxH := 36
 Opacity := 255  ; Set to 255 for maximum visibility over other elements
 ; ---------------------
 

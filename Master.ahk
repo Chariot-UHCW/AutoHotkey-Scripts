@@ -13,7 +13,7 @@ ConfigIniPath := A_ScriptDir "\config.ini"
 
 MasterGui := BuildGui("Master")
 
-ScriptList := MasterGui.AddListView("r10 w700", ["Name", "Last Updated", "Description"])
+ScriptList := MasterGui.AddListView("r10 w700", ["FileName", "Name", "Last Updated", "Description"])
 Loop Files, ScriptsDir "\*.ahk"
 {
     CustomName := IniRead(ScriptInfoPath, "Names", A_LoopFileName, A_LoopFileName)
