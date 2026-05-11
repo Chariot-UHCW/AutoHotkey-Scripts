@@ -1,3 +1,5 @@
+1.1.7 -- Mouse adjustment
+
 1.1.6 -- Mouse Fix
 
 Fixed color and size
