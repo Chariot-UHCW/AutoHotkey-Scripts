@@ -1,3 +1,7 @@
+1.1.6 -- Mouse Fix
+
+Fixed color and size
+
 1.1.5 -- more fixes
 
 Fixed Master opening file explorer and not the scripts
