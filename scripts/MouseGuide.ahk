@@ -1,9 +1,9 @@
 #Requires AutoHotkey v2.0
 
 ; --- Configuration ---
-ImagePath := "../images/MouseGuide/MouseGuideCyan.png"
-MaxW := 64
-MaxH := 64
+ImagePath := "../images/MouseGuide/MouseGuideRed.png"
+MaxW := 32
+MaxH := 32
 Opacity := 255  ; Set to 255 for maximum visibility over other elements
 ; ---------------------
 
