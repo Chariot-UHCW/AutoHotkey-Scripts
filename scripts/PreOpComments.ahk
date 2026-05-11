@@ -9,9 +9,9 @@ PreOpGUI(*) {
     EnterPreOpOutcomeGUI := BuildGui("Enter Pre-Op Outcome")
     EnterPreOpOutcomeGUI.AddText("", "Origin")
     EnterPreOpOutcomeGUI.AddDropDownList("w300 Choose1 vOrigin", [
-        ; "From Revenue Cycle workflow request", ; not yet implemented.
-        "Moved to accommodate a more urgent patient",
+        "From Worklist",
         "From MPTL list",
+        "Moved to accommodate a more urgent patient",
         "PT called",
         "Email request",
         "Rebooked due to staff sickness",
@@ -21,9 +21,9 @@ PreOpGUI(*) {
     EnterPreOpOutcomeGUI.AddText("", "Priority")
     EnterPreOpOutcomeGUI.AddDropDownList("w300 Choose1 vPriority", [
         "Routine",
-        "",
         "Urgent",
-        "31/62"
+        "31/62",
+        ""
     ])
     EnterPreOpOutcomeGUI.AddText("", "Patient Inform Method")
     EnterPreOpOutcomeGUI.AddDropDownList("w300 Choose1 vPtInform", [
@@ -40,7 +40,7 @@ PreOpGUI(*) {
     EnterPreOpOutcomeGUI.AddText("xm", "Breach")
     global BreachQuery := EnterPreOpOutcomeGUI.AddEdit("w150 vBreachQuery", "")
     global BreachDate := EnterPreOpOutcomeGUI.AddDateTime("xp+150 yp w150 vBreachDate", "")
-    EnterPreOpOutcomeGUI.AddButton("Default w80", "OK").OnEvent("Click", EnterOutcomeExe)
+    EnterPreOpOutcomeGUI.AddButton("Default w300 xm y+24", "OK").OnEvent("Click", EnterOutcomeExe)
     EnterPreOpOutcomeGUI.Show("AutoSize Center")
 
     EnterOutcomeExe(*) {

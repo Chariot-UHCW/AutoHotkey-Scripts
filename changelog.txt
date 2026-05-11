@@ -1,3 +1,9 @@
+1.1.5 -- more fixes
+
+Fixed Master opening file explorer and not the scripts
+Added a test mouse guide to assist in seeing the cursor location
+Changed some file names and other backend items.  
+
 1.1.4 -- Small fixes
 
 - Renamed "MasterV2" to just "Master"

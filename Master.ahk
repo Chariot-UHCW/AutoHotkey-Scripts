@@ -16,9 +16,10 @@ MasterGui := BuildGui("Master")
 ScriptList := MasterGui.AddListView("r10 w700", ["Name", "Last Updated", "Description"])
 Loop Files, ScriptsDir "\*.ahk"
 {
+    CustomName := IniRead(ScriptInfoPath, "Names", A_LoopFileName, A_LoopFileName)
     FileDesc := IniRead(ScriptInfoPath, "Descriptions", A_LoopFileName, "")
     FileAi := IniRead(ScriptInfoPath, "LastUpdated", A_LoopFileName, "")
-    ScriptList.Add(, A_LoopFileName, FileAi, FileDesc)
+    ScriptList.Add(, A_LoopFileName, CustomName, FileAi, FileDesc)
 }
 
 ScriptList.OnEvent("DoubleClick", RunFile) ; maybe make it open when checked
@@ -41,6 +42,7 @@ RunFile(ListView, RowNumber) {
     catch
         MsgBox("Could not open " A_ScriptDir "\scripts\" ScriptName ".")
 }
+
 
 ShowConfig() {
     TraySetIcon("./images\Icons\Config program.ico")
