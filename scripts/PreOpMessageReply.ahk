@@ -12,8 +12,8 @@ MessageCentreGUI(*) {
     MessageCentreGUI.AddText("", "Reply")
     MessageCentreGUI.AddDropDownList("w300 Choose1 vReply", [
         "APPROVED - Pre-Op Booked",
-        "APPROVED - Request Already Actioned",
-        "DENIED - Pre-Op Already Booked",
+        "DENIED - Has Future Pre-Op",
+        "DENIED - Had Past Pre-Op",
         "DENIED - Not a refresh"
     ])
     ;MessageCentreGUI.AddEdit(, "Test")
@@ -30,13 +30,13 @@ MessageCentreGUI(*) {
         Send(Intro "`n" "`n")
 
         if fields.Reply = "APPROVED - Pre-Op Booked"
-            Send("This Pre-Op has been booked.")
+            Send("This Pre-Op assessment has been booked.")
 
-        if fields.Reply = "APPROVED - Request Already Actioned"
-            Send("This request has already been actioned and booked.")
+        if fields.Reply = "DENIED - Has Future Pre-Op"
+            Send("This request hasn't been actioned as this patient already has a future pre-op appointment. If you need to request anything excluding a refresh please request using the proper channels")
 
-        if fields.Reply = "DENIED - Pre-Op Already Booked"
-            Send("This request hasn't been actioned as this patient already has a pre-op appointment booked. If your requesting to modify the appointment please request using the proper channels")
+        if fields.Reply = "DENIED - Had Past Pre-Op"
+            Send("This request hasn't been actioned as this patient already had a past pre-op appointment which is still valid. If you need to request anything excluding a refresh please request using the proper channels")
 
         if fields.Reply = "DENIED - Not a refresh"
             Send("This request hasn't been actioned. The message centre is for pre-operative refresh appointments only, not for new appointment requests or other queries. Please follow the usual process for this request.")

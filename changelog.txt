@@ -1,3 +1,7 @@
+1.2.2 -- options changes
+
+added and changed some.
+
 1.2.1 -- More options
 
 more pre-op message centre options
