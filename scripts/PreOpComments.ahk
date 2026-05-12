@@ -10,6 +10,7 @@ PreOpGUI(*) {
     EnterPreOpOutcomeGUI.AddText("", "Origin")
     EnterPreOpOutcomeGUI.AddDropDownList("w300 Choose1 vOrigin", [
         "From Worklist",
+        "From message Centre",
         "From MPTL list",
         "Moved to accommodate a more urgent patient",
         "PT called",
