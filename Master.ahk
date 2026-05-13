@@ -85,7 +85,8 @@ ShowConfig() {
         ["Add Referral:", "vHotkeyAddReferral"],
         ["Pre-Op Comments:", "vHotkeyPreOpGui"],
         ["Pre-Op Message Centre Replies", "vHotkeyMessageCentreReplies"],
-        ["Shorthand Translator:", "vHotkeyShorthandTranslator"],
+        ["Pre-Op Email Replies", "vHotkeyEmailReplies"],
+        ["Shorthand Translator:", "vHotkeyShorthandTranslator"]
     ] {
         ConfigGui.AddText("xm y+10 w200", entry[1])
         ConfigGui.AddHotkey("x+10 yp-3 w380 " entry[2])
@@ -112,6 +113,7 @@ ShowConfig() {
         ["HotkeyAddReferral"],
         ["HotkeyPreOpGui"],
         ["HotkeyMessageCentreReplies"],
+        ["HotkeyEmailReplies"],
         ["HotkeyShorthandTranslator"]
     ] {
         ConfigGui[entry[1]].Value := IniRead(ConfigIniPath, "Hotkeys", entry[1], "")
@@ -144,6 +146,7 @@ SaveConfig(GuiObj) {
         ["HotkeyAddReferral"],
         ["HotkeyPreOpGui"],
         ["HotkeyMessageCentreReplies"],
+        ["HotkeyEmailReplies"],
         ["HotkeyShorthandTranslator"]
     ] {
         IniWrite(GuiObj[entry[1]].Value, ConfigIniPath, "Hotkeys", entry[1])
@@ -172,6 +175,7 @@ ResetConfig(GuiObj) {
         ["HotkeyAddReferral"],
         ["HotkeyPreOpGui"],
         ["HotkeyMessageCentreReplies"],
+        ["HotkeyEmailReplies"],
         ["HotkeyShorthandTranslator"]
     ] {
         GuiObj[entry[1]].Value := ""

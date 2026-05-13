@@ -4,6 +4,7 @@
 TraySetIcon("..\images\Icons\Dialog.ico")
 
 Intro := "Hi,"
+Outro := "If you need to request anything excluding a refresh please request using the proper channels"
 
 try Hotkey MessageCentreGUIKey, MessageCentreGUI
 MessageCentreGUI(*) {
@@ -16,6 +17,7 @@ MessageCentreGUI(*) {
         "DENIED - Had Past Pre-Op",
         "DENIED - Not a refresh"
     ])
+    MessageCentreGUI.AddEdit("Disabled", "")
     ;MessageCentreGUI.AddEdit(, "Test")
     MessageCentreGUI.AddButton("Default w300 xm y+24", "OK").OnEvent("Click", EnterOutcomeExe)
     MessageCentreGUI.Show("AutoSize Center")
@@ -33,12 +35,16 @@ MessageCentreGUI(*) {
             Send("This Pre-Op assessment has been booked.")
 
         if fields.Reply = "DENIED - Has Future Pre-Op"
-            Send("This request hasn't been actioned as this patient already has a future pre-op appointment. If you need to request anything excluding a refresh please request using the proper channels")
+            Send("This request hasn't been actioned as this patient already has a future pre-op appointment. " Outro)
 
         if fields.Reply = "DENIED - Had Past Pre-Op"
-            Send("This request hasn't been actioned as this patient already had a past pre-op appointment which is still valid. If you need to request anything excluding a refresh please request using the proper channels")
+            Send("This request hasn't been actioned as this patient already had a past pre-op appointment which is still valid." Outro)
 
         if fields.Reply = "DENIED - Not a refresh"
-            Send("This request hasn't been actioned. The message centre is for pre-operative refresh appointments only, not for new appointment requests or other queries. Please follow the usual process for this request.")
+            Send("This request hasn't been actioned. The message centre is for pre-operative refresh appointments only, not for new appointment requests or other queries." Outro)
     }
 }
+
+
+
+
