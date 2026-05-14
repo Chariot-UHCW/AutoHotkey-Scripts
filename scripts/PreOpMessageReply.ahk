@@ -3,7 +3,7 @@
 
 TraySetIcon("..\images\Icons\Dialog.ico")
 
-Intro := "Hi,"
+Intro := "Hello,"
 Outro := ""
 Signature := "`n`n - " fullName
 
