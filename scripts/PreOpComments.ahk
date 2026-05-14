@@ -9,11 +9,11 @@ PreOpGUI(*) {
     EnterPreOpOutcomeGUI := BuildGui("Enter Pre-Op Outcome")
     EnterPreOpOutcomeGUI.AddText("", "Origin")
     EnterPreOpOutcomeGUI.AddDropDownList("w300 Choose1 vOrigin", [
-        "From Worklist",
-        "From message Centre",
+        "From worklist",
+        "From message centre",
         "From MPTL list",
         "Moved to accommodate a more urgent patient",
-        "PT called",
+        "Pt called",
         "Email request",
         "Rebooked due to staff sickness",
         "Request from med sec",
@@ -51,15 +51,23 @@ PreOpGUI(*) {
         Log("Origin: " . fields.Origin)
         Log("Priority: " . fields.Priority)
         Log("Patient informed: " . fields.PtInform)
-
+        Log("Tci date: " . FormatTime(fields.TCIDate, "dd/MM/yyyy"))
+        Log("breach date: " . fields.BreachDate)
+        Log("now: " . FormatTime(, "dd/MM/yyyy"))
 
         if fields.Priority != ""
             Send(fields.Priority . ", ")
 
-        if fields.TCIQuery != ""
+        ; if both text and diff date is presented, the date is prioritised.
+        if FormatTime(fields.TCIDate, "dd/MM/yyyy") != FormatTime(, "dd/MM/yyyy")
+            Send("TCI " FormatTime(fields.TCIDate, "dd/MM/yyyy") ", ")
+        else if fields.TCIQuery != ""
             Send("TCI " fields.TCIQuery ", ")
 
-        if fields.BreachQuery != ""
+        ; if both text and diff date is presented, the date is prioritised.
+        if FormatTime(fields.BreachDate, "dd/MM/yyyy") != FormatTime(, "dd/MM/yyyy")
+            Send("Breaches " FormatTime(fields.BreachDate, "dd/MM/yyyy") ", ")
+        else if fields.BreachQuery != ""
             Send("Breaches " fields.BreachQuery ", ")
 
         if fields.Origin != ""
