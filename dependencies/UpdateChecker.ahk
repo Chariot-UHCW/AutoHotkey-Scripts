@@ -1,111 +1,81 @@
-REPO_URL := "https://github.com/Chariot-UHCW/AutoHotkey-Scripts.git"
+#Requires AutoHotkey v2.0
+#SingleInstance Force
+
+; --- Configuration ---
+REPO_URL    := "https://github.com/Chariot-UHCW/AutoHotkey-Scripts.git"
 RAW_VERSION := "https://raw.githubusercontent.com/Chariot-UHCW/AutoHotkey-Scripts/master/version"
+LOCAL_VER_FILE := A_ScriptDir "\version"
 
-CheckForUpdate()
+; Run check on startup
+CheckForUpdates()
 
-CheckForUpdate() {
-    ; Check local version
-    if !FileExist(A_ScriptDir "\version") {
-        MsgBox "Local version file not found.`nExpected: " "\version", "Update Checker", "Icon!"
-        return
-    }
-    localVersion := Trim(FileRead(A_ScriptDir "\version"), " `t`r`n")
-
-    ; Check remote version
-    remoteVersion := FetchRemoteVersion(RAW_VERSION)
-    if (remoteVersion = "") {
-        MsgBox("Error - Cannot fetch remote - unable to update")
-        return
-    }
-
-    ; Compare
-    if (localVersion = remoteVersion) {
-        return
-    }
-
-    ; Prompt update
-    answer := MsgBox(
-        "A new version is available!`n`n"
-        "Current : " localVersion "`n"
-        "Latest  : " remoteVersion "`n`n"
-        "You can view the changelog at the repo page or in changelog.txt once installed.`n`n"
-        "Clone the new version now?",
-        "Update Available",
-        "YesNo Icon?"
-    )
-    if (answer != "Yes")
-        return
-
-    ; Create folder and get paths for updated script
-    parentDir := GetParentDir(A_ScriptDir)
-    newFolderName := "Chariot's AHK Scripts - " remoteVersion
-    newFolderPath := parentDir "\" newFolderName
-
-    ; Check if its already installed
-    if DirExist(newFolderPath) {
-        MsgBox(
-            "Update already installed at:`n" newFolderPath "`n`n"
-            "If you need to reinstall please delete that folder first and try again.",
-            "Update Checker",
-            "Icon!"
-        )
-        return
-    }
-
-    ; Clone repo
-    gitCmd := 'git clone "' REPO_URL '" "' newFolderPath '"'
-    RunWait A_ComSpec ' /c ' gitCmd, , "Hide"
-
-    ; Check it installed
-    if !DirExist(newFolderPath) {
-        MsgBox(
-            "Clone failed. You probably don't have git installed. Please check:`n"
-            "  • Git is installed and on your PATH`n"
-            "  • You have internet access`n`n"
-            "Repo: " REPO_URL,
-            "Update Failed",
-            "IconX"
-        )
-        return
-    }
-
-    ; Success message
-    MsgBox(
-        "Update cloned successfully!`n`n"
-        "New folder:`n" newFolderPath "`n`n"
-        "Please relaunch Masterv2.ahk from the new folder (version " remoteVersion ") and delete this old one (version " localVersion ").",
-        "Update Complete",
-        "Iconi"
-    )
-}
-
-; I used ai for this part:
-; ------------------------------------------------------------
-;  Downloads the raw version file and returns the first line.
-;  Returns "" on any failure so startup is never blocked.
-; ------------------------------------------------------------
-FetchRemoteVersion(url) {
+CheckForUpdates() {
     try {
+        ; 1. Get Remote Version
         http := ComObject("WinHttp.WinHttpRequest.5.1")
-        http.Open("GET", url, false)
-        http.SetTimeouts(3000, 3000, 3000, 5000)   ; resolve / connect / send / receive (ms)
+        http.Open("GET", RAW_VERSION, false)
         http.Send()
-        if (http.Status = 200) {
-            ; Grab only the first line in case of trailing newlines
-            raw := StrSplit(http.ResponseText, "`n")[1]
-            return Trim(raw, " `t`r`n")
+        
+        if (http.Status != 200)
+            return
+            
+        remoteVer := Trim(http.ResponseText)
+        localVer  := FileExist(LOCAL_VER_FILE) ? Trim(FileRead(LOCAL_VER_FILE)) : "0.0.0"
+
+        ; 2. Robust Version Comparison
+        if IsNewer(remoteVer, localVer) {
+            msg := MsgBox("New Update Found!`n`nLocal: " localVer "`nRemote: " remoteVer "`n`nUpdate now?", "Updater", 4)
+            if (msg = "Yes") {
+                DoUpdate()
+            }
         }
+    } catch Error as e {
+        ; Silent fail if no internet/server down
     }
-    ; Network error, timeout, etc. — fail silently
-    return ""
 }
 
-GetParentDir(path) {
-    SplitPath path, , &parent
-    return parent
+; Compares x.x.x version strings. Returns true if vRemote > vLocal
+IsNewer(vRemote, vLocal) {
+    r := StrSplit(vRemote, "."), l := StrSplit(vLocal, ".")
+    loop Max(r.Length, l.Length) {
+        rv := (A_Index <= r.Length) ? Integer(r[A_Index]) : 0
+        lv := (A_Index <= l.Length) ? Integer(l[A_Index]) : 0
+        if (rv > lv)
+            return true
+        if (rv < lv)
+            return false
+    }
+    return false
 }
 
-GetFolderName(path) {
-    SplitPath path, &name
-    return name
+DoUpdate() {
+    if !DirExist(A_ScriptDir "\.git") {
+        MsgBox "Error: This folder is not a Git repository. Cannot auto-update."
+        return
+    }
+
+    ; The batch file handles the process hand-off
+    ; 'git fetch' + 'git reset' ensures we match the repo exactly 
+    ; without touching untracked files like .ini
+    batchScript := 
+    (
+        "@echo off`n"
+        "echo Updating to latest version...`n"
+        "timeout /t 1 /nobreak > nul`n"
+        "git fetch --all`n"
+        "git reset --hard origin/master`n" 
+        "start `"`" `"" A_ScriptFullPath "`"`n"
+        "del `"%~f0`" & exit"
+    )
+
+    tempBatch := A_ScriptDir "\update_tmp.bat"
+    if FileExist(tempBatch)
+        FileDelete(tempBatch)
+        
+    FileAppend(batchScript, tempBatch)
+    Run(tempBatch, , "Hide")
+    ExitApp()
 }
+
+; --- Your Script Content ---
+MsgBox "Application Loaded. Running Version: " (FileExist(LOCAL_VER_FILE) ? FileRead(LOCAL_VER_FILE) : "Unknown")
