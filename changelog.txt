@@ -1,3 +1,8 @@
+1.3.2 -- Local Git
+
+Added a portal git into the repo, so when updating on a new pc reinstalling git to the PATH is not nessesary.
+This also means if you download the files as a zip you wont ever need to install git. 
+
 1.3.1 -- Update test
 
 Testing if the below is true

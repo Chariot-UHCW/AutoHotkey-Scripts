@@ -182,6 +182,10 @@ ResetConfig(GuiObj) {
     }
 }
 
+ShowChangelog() {
+
+}
+
 NumpadEnter:: {
     MasterGui.Show()
 }
